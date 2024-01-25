@@ -1,0 +1,33 @@
+<template>
+    <template if:true={isRequired} >
+        <lightning-input
+            class = "input"
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            autocomplete="off"
+            name="enter-search"
+            label={label}
+            onchange={handleChange}
+            type="search"
+            value={value}
+            placeholder={placeholder}
+            required
+        >
+        </lightning-input>
+    </template>
+    <template if:false={isRequired} >
+        <lightning-input
+            class = "input"
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            autocomplete="off"
+            name="enter-search"
+            label={label}
+            onchange={handleChange}
+            type="search"
+            value={value}
+            placeholder={placeholder}
+        >
+        </lightning-input>
+    </template>
+</template>

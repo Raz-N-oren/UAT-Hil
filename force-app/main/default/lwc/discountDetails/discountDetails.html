@@ -1,0 +1,277 @@
+<template>
+    <!-- <div>
+        <lightning-card title="Url Sample" icon-name="custom:custom14">
+          <div class="slds-m-around_medium">
+            <p>{displayValue}</p>
+          </div>
+        </lightning-card>
+      </div> -->
+    <!-- record view - shows existing record info -->
+    <lightning-record-view-form object-api-name={objectApiName} record-id={recordId} if:false={isEditMode}>
+        <lightning-messages></lightning-messages>
+    <!-- record view - view new discount -->
+        <lightning-card title="פרטי הנחה">
+            <lightning-button variant="Brand" label="שכפל" title="duplicate" onclick={handleDuplicate}
+                class="slds-m-top_small"></lightning-button>
+            <div class={tabClass}>
+                <div class={oneOfTwo}>
+                    <lightning-output-field class="slds-border_bottom" field-name="Display_Filter_1__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="Account__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="Settlement__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="Geographic_Area__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="Display_Filter_2__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="Product__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="Product_Family_new__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="Sub_Product_Family__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="Requested_Discount__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="TonPriceAfterDiscount__c"></lightning-output-field>
+                </div>
+                <div class={oneOfTwo}>
+                    <lightning-output-field class="slds-border_bottom" field-name="Start_Date__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="End_Date__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="Reazon__c"></lightning-output-field>
+                    <lightning-output-field class="slds-border_bottom" field-name="Note__c"></lightning-output-field>
+                </div>
+            </div>
+        </lightning-card>
+    </lightning-record-view-form>
+
+    <!-- record edit - edit an existing record or create a new one -->
+    <lightning-record-edit-form object-api-name='Discount__c' onsubmit={submitForm} onsuccess={handleSuccess} onerror={handleError} record-id={recordId} if:true={isEditMode}>
+        <lightning-messages></lightning-messages>
+        <lightning-card title="פרטי הנחה" >
+            <div class="slds-m-top_medium">
+                <lightning-button variant="brand" label="שמור" title="שמור" onclick={submitClicked} type="submit" class="slds-m-top_small"></lightning-button>
+                <lightning-button  if:true={hasDiscountInUrl} variant="brand" label="שמור וחדש" title="שמור וחדש" onclick={submitAndNewClicked} type="submit" class="slds-m-top_small"></lightning-button>
+                <lightning-button variant="Neutral" label="בטל" title="בטל" onclick={handleReset} class="slds-m-top_small"></lightning-button>
+            </div>
+            <div class={tabClass}>
+                <div class={oneOfTwo}>
+                    <lightning-input-field variant="label-stacked" onchange={changeFil1} required field-name="Display_Filter_1__c" value={fil1}></lightning-input-field>
+                    <lightning-input-field variant="label-stacked" if:true={isAccount} onchange={accChanged} required field-name="Account__c" value={acc}></lightning-input-field>
+                    <lightning-input-field variant="label-stacked" if:true={isSettlement} required field-name="Settlement__c" value={settlement}></lightning-input-field>
+                    <lightning-input-field variant="label-stacked" if:true={isArea} required field-name="Geographic_Area__c" value={area}></lightning-input-field>
+                    <lightning-input-field variant="label-stacked" onchange={changeFil2} field-name="Display_Filter_2__c" value={fil2}></lightning-input-field>
+                    <!-- <lightning-input-field variant="label-stacked" required onchange={productChanged} field-name="Product__c" value={product}></lightning-input-field> -->
+                    <lightning-input-field variant="label-stacked" if:true={isProuctDisplay} required onchange={productChanged} field-name="Product__c" value={product}></lightning-input-field>
+                    
+                    <!-- <span>{specificGravity}</span> -->
+                    <p if:true={thereIsGravity} style="color: black; font-size:13px; margin-right:8px;"> משקל סגולי  {specificGravity}</p>
+                    <lightning-input-field variant="label-stacked" if:true={isProductFamily} required onchange={productFamilyChanged} field-name="Product_Family_new__c" value={productFamily}></lightning-input-field>
+                    <lightning-input-field variant="label-stacked" if:true={isProductSubFamily} required onchange={productSubFamilyChanged} field-name="Sub_Product_Family__c" value={productSubFamily}></lightning-input-field>
+                    <!-- <lightning-input-field variant="label-stacked" type="number" field-name="priceAfterDiscount__c" name="price" label="מחיר" value={productPrice} onchange={productPriceChangeHandler} step="0.01" max={cubePriceBeforeDiscount} min="0.00" required></lightning-input-field> -->
+                    <lightning-input-field  variant="label-stacked" type="number" field-name="TonPriceAfterDiscount__c" name="price" label="מחיר" value={productPrice} onchange={productPriceChangeHandler} step="0.01" max={cubePriceBeforeDiscount} min="0.00" required></lightning-input-field>
+                    <!-- <lightning-input-field if:true={hideMe} field-name="priceAfterDiscount__c" type="number" value={priceAfterDiscount}  step="0.01"></lightning-input-field> -->
+                    <!-- <lightning-input-field field-name="priceAfterDiscount__c" type="number" value={testush}  step="0.01"></lightning-input-field> -->
+                    <lightning-input variant="label-stacked" class="discount-input" type="number" label="הנחה מבוקשת" formatter="decimal" step="0.01" onchange={calculatePricesAfterDiscount} value={requested} max="99.99" min="0.0" autocomplete="off" dir="rtl" required></lightning-input>      
+                    <lightning-input-field variant="label-stacked" class="slds-hide" field-name="Requested_Discount__c" value={requested}></lightning-input-field>
+                    <lightning-input-field variant="label-stacked" class="slds-hide" field-name="Target_Discount__c" value={targetDiscount}></lightning-input-field>
+                    <lightning-input-field variant="label-stacked" class="slds-hide" field-name="Max_Discount__c" value={maxDiscount}></lightning-input-field>
+                </div>
+                <div class={oneOfTwo}>
+                    <lightning-input-field variant="label-stacked" style="float:none !important" field-name="Start_Date__c" required value={startDate}></lightning-input-field>
+                    <lightning-input-field variant="label-stacked" style="float:none !important" field-name="End_Date__c" value={endDate}></lightning-input-field>
+                    <lightning-input-field variant="label-stacked" style="float:revert !important" field-name="Reazon__c" value={reason}></lightning-input-field>
+                    <lightning-input-field variant="label-stacked" style="float:unset !important" field-name="Note__c" value={note}></lightning-input-field>
+                </div>
+            </div>
+        </lightning-card>
+    </lightning-record-edit-form>
+
+    <!-- Show for Account Matrix Details -->
+    <lightning-card title="נתוני מטריצה" if:true={showMatrixData}>
+        <div  class={tabClass}>
+            <div class={oneOfThree}>
+                <!-- <div  if:true={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <lightning-input class="slds-border_bottom" type="text" read-only label="גודל לקוח"
+                        value={customerSize}></lightning-input>
+                </div> -->
+                <!-- <div class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">גודל לקוח</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12">
+                        <lightning-input class="slds-border_bottom" type="text" read-only value={customerSize}></lightning-input>
+                    </div>
+                </div> -->
+
+                <!-- מציג רק בהנחה חדשה דרך discount cutom-->
+                <div if:true={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">גודל לקוח</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12 slds-text-align_left">
+                        <lightning-input class="slds-text-align_left input-check" type="text" read-only value={customerSize}></lightning-input>
+                    </div>
+                </div>
+                
+                <!--מציג רק בהנחה חדשה דרך תעודות משלוח visual force page -->
+                <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-wrap">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">גודל לקוח</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12 slds-text-align_left">
+                        <lightning-input class="slds-text-align_left input-check" type="text" read-only value={customerSize}></lightning-input>
+                    </div>
+                </div>
+
+
+                
+            </div>
+            <div class={oneOfThree}>
+                <!-- <div class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <lightning-input class="slds-border_bottom" type="number" read-only label="הנחת יעד"
+                        value={targetDiscount}></lightning-input>
+                </div> -->
+
+                <!-- מציג רק בהנחה חדשה דרך discount cutom-->
+                <div if:true={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-grid ">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">הנחת יעד</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12 slds-text-align_left">
+                        <lightning-input class="slds-text-align_left input-check" type="number" read-only value={targetDiscount}></lightning-input>
+                    </div>
+                </div>
+
+                <!--מציג רק בהנחה חדשה דרך תעודות משלוח visual force page -->
+                <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-form">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">הנחת יעד</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12 slds-text-align_left">
+                        <lightning-input class="slds-text-align_left input-check" type="number" read-only value={targetDiscount}></lightning-input>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class={oneOfThree}>
+                <!-- <div class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <lightning-input variant="label-stacked" class="slds-border_bottom" type="number" read-only label="הנחה מקסימלית"
+                        value={maxDiscount}></lightning-input>
+                </div> -->
+
+                <!-- מציג רק בהנחה חדשה דרך discount cutom-->
+                <div if:true={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">הנחה מקסימלית</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12 slds-text-align_left">
+                        <lightning-input class="slds-text-align_left input-check" type="number" read-only value={maxDiscount}></lightning-input>
+                    </div>
+                </div>
+
+                <!--מציג רק בהנחה חדשה דרך תעודות משלוח visual force page -->
+                <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-wrap">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">הנחה מקסימלית</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12 slds-text-align_left">
+                        <lightning-input class="slds-text-align_left input-check" type="number" read-only value={maxDiscount}></lightning-input>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </lightning-card>
+
+    <!-- Show selected product or family-product prices, before and after discount -->
+    <lightning-card title="מחירים" if:true={showPrice} class="slds-m-bottom_medium">
+        <div class={tabClass} style="margin-bottom: 40px;" >
+
+            <div class={oneOfTwo}>
+
+                <div if:true={hasDiscountInUrl} class="slds-form_horizontal slds-form"  >
+                    <lightning-input  type="text" read-only label="מחיר לטון לפני הנחה"
+                        value={tonnePriceBeforeDiscount}></lightning-input>
+                </div>
+
+                <!-- <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-form"  >
+                    <lightning-input  type="text" read-only label="מחיר לטון לפני הנחה"
+                        value={tonnePriceBeforeDiscount}></lightning-input>
+                </div> -->
+
+                <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-wrap slds-form">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">מחיר לטון לפני הנחה</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12 slds-text-align_left">
+                        <lightning-input class="slds-text-align_left input-check" type="text" read-only value={tonnePriceBeforeDiscount}></lightning-input>
+                    </div>
+                </div>
+
+            <!-- </div> -->
+
+                <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                <div if:true={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <lightning-input  type="text" read-only label="מחיר לקוב לפני הנחה"
+                        value={cubePriceBeforeDiscount}></lightning-input>
+                </div>
+ 
+                <!-- <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <lightning-input  type="text" read-only label="מחיר לקוב לפני הנחה"
+                        value={cubePriceBeforeDiscount}></lightning-input>
+                </div>  -->
+
+                <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-wrap slds-form">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">מחיר לקוב לפני הנחה</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12 slds-text-align_left">
+                        <lightning-input class="slds-text-align_left input-check" type="text" read-only value={cubePriceBeforeDiscount}></lightning-input>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class={oneOfTwo}>
+
+                <div if:true={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <lightning-input  type="text" read-only label="מחיר לטון אחרי הנחה"
+                        value={tonnePriceAfterDiscount}></lightning-input>
+                </div>
+
+                <!-- <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <lightning-input  type="text" read-only label="מחיר לטון אחרי הנחה"
+                        value={tonnePriceAfterDiscount}></lightning-input>
+                </div> -->
+
+                <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-wrap slds-form">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">מחיר לטון אחרי הנחה</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12 slds-text-align_left">
+                        <lightning-input class="slds-text-align_left input-check" type="text" read-only value={tonnePriceAfterDiscount}></lightning-input>
+                    </div>
+                </div>
+
+
+                 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+                <div if:true={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <lightning-input  type="text" read-only label="מחיר לקוב אחרי הנחה"
+                        value={cubePriceAfterDiscount}></lightning-input>
+                </div>
+
+                <!-- <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                    <lightning-input  type="text" read-only label="מחיר לקוב אחרי הנחה"
+                        value={cubePriceAfterDiscount}></lightning-input>
+                </div> -->
+
+                <div if:false={hasDiscountInUrl} class="slds-form_horizontal slds-wrap slds-form">
+                    <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                        <label class="slds-form-element__label">מחיר לקוב אחרי הנחה</label>
+                    </div>
+                    <div class="slds-col slds-size_11-of-12 slds-text-align_left">
+                        <lightning-input class="slds-text-align_left input-check" type="text" read-only value={cubePriceAfterDiscount}></lightning-input>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </lightning-card>
+</template>

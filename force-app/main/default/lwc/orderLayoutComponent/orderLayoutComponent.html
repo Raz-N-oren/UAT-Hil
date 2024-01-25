@@ -1,0 +1,347 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <div class="main_container" >
+        <!--כל המלבן/השורה העליונה-->
+    <header dir="rtl">
+        <div class="slds-wrap">
+            <div class="headerIcons slds-m-right_x-small slds-m-left_x-small">
+                <lightning-icon icon-name="utility:display_text" alternative-text="orderNumber" title="OrderNumber">
+                </lightning-icon>
+                <p class="slds-p-around_x-small">{order.orderNumber}</p>
+            </div>
+            <div class="headerIcons slds-m-right_x-small slds-m-left_x-small">
+                <lightning-icon icon-name={statusIcon} size="x-small" title="orderStatus"></lightning-icon>
+                <p class="slds-p-around_x-small">{order.Status}</p>
+            </div>
+            <div if:true={createdByName} class="headerIcons slds-m-right_x-small slds-m-left_x-small">
+                <lightning-icon icon-name="utility:questions_and_answers" size="x-small" title="נוצר על ידי"></lightning-icon>
+                <p class="slds-p-around_x-small">נוצר ע"י: {createdByName}</p>
+            </div>
+            <div if:true={agronom} class="headerIcons slds-m-right_x-small slds-m-left_x-small">
+                <lightning-icon icon-name="utility:advertising" size="x-small" title="אגרונום"></lightning-icon>
+                <p class="slds-p-around_x-small">אגרונום: {agronom}</p>
+            </div>
+            <div if:true={agronom} class="headerIcons slds-m-right_x-small slds-m-left_x-small">
+                <lightning-icon icon-name="utility:advertising" size="x-small" title="אגרונום"></lightning-icon>
+                <p class="slds-p-around_x-small">תאריך יצירה: {createdDate}</p>
+            </div>
+            <div if:true={agronom} class="headerIcons slds-m-right_x-small slds-m-left_x-small">
+                <lightning-icon icon-name="utility:advertising" size="x-small" title="אגרונום"></lightning-icon>
+                <p class="slds-p-around_x-small">שונה לאחרונה ע"י : {LastModifiedByName}</p>
+            </div>
+        </div>
+        <div class="headerButtonsContainer">
+            <div class="headerIcons slds-p-around_small">
+                <template if:true={recordId}>
+                    <div class="cleanFields slds-m-left_x-small" onclick={duplicateOrderHandler}>
+                        <lightning-icon icon-name="utility:copy" class="duplicateIcon" size="small"
+                            alternative-text="duplicate" title="שכפול הזמנה">
+                        </lightning-icon>
+                        <p class="slds-p-around_x-small">שכפול הזמנה</p>
+                    </div>
+                </template>
+                <template if:false={recordId}>
+                    <div onclick={cleanScreenFields} class="cleanFields">
+                        <lightning-icon icon-name="action:delete" size="x-small" alternative-text="cleanFields"
+                            title="ניקוי שדות">
+                        </lightning-icon>
+                        <p class="slds-p-around_x-small">ניקוי שדות</p>
+                    </div>
+                </template>
+            </div>
+            <div class="headerIcons" if:true={isOrderNotSapApproved}>
+                <lightning-button class="slds-m-right_x-small slds-m-left_xx-small" label='בדוק מול SAP'
+                    icon-name="utility:sync" title="בדוק מול SAP" onclick={triggerProcessorHandler}></lightning-button>
+            </div>
+            <div class="headerIcons" if:false={isOrderLockedAndNotNew}>
+                <lightning-button class="slds-m-right_x-small slds-m-left_xx-small" variant="destructive-text" label='ביטול הזמנה' icon-name="utility:deprecate" title="בדוק מול SAP" onclick={cancleOrderHandler}>
+                </lightning-button>
+            </div>
+            <template if:true={myBooleanVariable}>
+                <lightning-button class="slds-align_absolute-center" variant="destructive-text" label="סגור הזמנת מסגרת " onclick={closeFrameDealHandle}></lightning-button>
+            </template>
+            <lightning-button if:false={isOrderCanceled} disabled={isSaveBtnClickedValue} class="slds-m-right_x-small slds-m-left_xx-small" variant="brand" label={saveOrderLabel} icon-name="utility:save" title="שמירה ושליחת ההזמנה" accesskey="s" onclick={validate}></lightning-button>
+    
+        </div>
+    </header>
+    <!--     הדר נגמר   -->
+    <div class="container slds-p-top_small">
+        <!-- Aside modal start -->
+        <template if:true={isButtonClicked}>
+            <section role="dialog" tabindex="-1" aria-labelledby="heading-id-1" aria-modal="true"
+                aria-describedby="body-id-1" class="slds-modal slds-fade-in-open">
+                <div class="modal slds-fade-in-open slidein">
+                    <div class={toggleBtnLastOrders}>
+                        <button class="lastOrdersBtn" onclick={handleAsideToggle}>
+                            <lightning-icon icon-name={lastOrdersIcon} title="הזמנות אחרונות ללקוח"></lightning-icon>
+                        </button>
+                    </div>
+                    <!-- aside modal header start -->
+                    <div class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={closeNewContactModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                                size="small"></lightning-icon>
+                        </button>
+                        <div id="heading-id-1" class="asideHeaderTitle">
+                            <h2 class="slds-text-heading_medium slds-hyphenate">הזמנות קודמות</h2>
+                            <h4 id="heading-id-2" class="slds-text-heading_small blueTitle">{accountName}</h4>
+                        </div>
+                    </div>
+                    <!-- aside modal body start מודל חץ כחול משמאל-הזמנות קודמות--> 
+                    <div class="slds-modal__content slds-p-around_medium modalBody" id="body-id-1" >
+                        <dl class="slds-list_vertical-space slds-wrap">
+                            <div class="cardsContainer">
+                                <template for:each={lastOrders} for:item="order">
+                                    <!--card-->
+                                    <div class="previousOrderCard" key={order.Id}>
+                                        <!--header card-->
+                                        <div class="previousOrderCardHeader">
+                                            <label> מספר הזמנה
+                                                <p class="modalFont"><a href='' onclick={viewRecord} data-id={order.Id}>{order.OrderNumber}</a></p>
+                                            </label>
+                                            <label>סטאטוס
+                                                <p class="modalFont">{order.Status}</p>
+                                            </label>
+                                            <label>
+                                                נוצר בתאריך
+                                                <p class="modalFont">
+                                                    <lightning-formatted-date-time value={order.CreatedDate}>
+                                                    </lightning-formatted-date-time>
+                                                </p>
+                                            </label>
+                                            <template if:true={order.IntermediaryWarehouse__c}>
+                                                <label>
+                                                    מחסן מתווך
+                                                    <p class="modalFont">{order.IntermediaryWarehouse__r.Name}</p>
+                                                </label>
+                                            </template>
+                                            <template if:true={order.Paying_Customer__c}>
+                                                <label>לקוח משלם
+                                                    <p class="modalFont">{order.Paying_Customer__r.Name}</p>
+                                                </label>
+                                            </template>
+                                            <template if:true={order.AgentReceivesCommission__c}>
+                                                <label>
+                                                    סוכן מקבל עמלה
+                                                    <p class="modalFont">{order.AgentReceivesCommission__r.Name}</p>
+                                                </label>
+                                            </template>
+                                            <label>
+                                                <lightning-icon icon-name="utility:copy" class="duplicateIcon"
+                                                    size="small" alternative-text="duplicate" title="שכפול הזמנה"
+                                                    data-id={order.Id} onclick={duplicatePreviousOrder}>
+                                                </lightning-icon>
+                                            </label>
+                                        </div>
+
+                                        <table >
+                                            <tr style="border-bottom: 1px solid #D3D3D3;padding-bottom:5px;">
+                                                <th>מוצר</th>
+                                                <th>כמות</th>
+                                                <th>יחידת מידה</th>
+                                                <th>סטאטוס שורה</th>
+                                                <th>מוביל/ קו</th>
+                                                <th>תאריך אספקה אחרון</th>
+                                                <th>תוספים</th>
+                                            </tr>
+                                            <template for:each={order.OrderItems} for:item="item">
+                                                <tr key={item.Id}  style="border-bottom: 1px solid #e4e2e2;">
+                                                    <td onclick={handleReadMoreDeliveryNote} data-id={item.OrderId}
+                                                        data-item={item.Id} data-name={item.Product2.Name}
+                                                        data-quantity={item.Quantity} data-delivery={item.deliveryNoteId}
+                                                        data-unitprice={item.UnitOfMeasure__c}>
+                                                        <!--אם יש תעודת משלוח-->
+                                                        <lightning-icon if:true={item.deliveryNoteExist} data-id={item.Id} icon-name="custom:custom31" size="xx-small"
+                                                            alternative-text="Approved" title="Approved" class="slds-m-right_small">
+                                                        </lightning-icon>
+                                                         {item.Product2.Name}</td>
+                                                    <td>{item.Quantity}</td>
+                                                    <td>{item.UnitOfMeasure__c}</td>
+                                                    <td>{item.status}</td>
+                                                    <td>{item.truckCode}</td>
+                                                    <td>{item.deliveryDate}</td>
+                                                    <template if:false={item.Extension_1__c}>
+                                                        <td class="ext"></td>
+                                                    </template>
+                                                    <template if:false={item.Extension_2__c}>
+                                                        <td class="ext"></td>
+                                                    </template>
+                                                    <template if:false={item.Extension_3__c}>
+                                                        <td class="ext"></td>
+                                                    </template>
+                                                    <template if:true={item.Extension_1__c}>
+                                                        <td class="ext">{item.Extension_1__r.Name}
+                                                            {item.Extension_Quantity_1__c} {item.Extension_Unit_1__c}
+                                                        </td>
+                                                    </template>
+                                                    <template if:true={item.Extension_2__c}>
+                                                        <td class="ext">{item.Extension_2__r.Name}
+                                                            {item.Extension_Quantity_2__c} {item.Extension_Unit_2__c}
+                                                        </td>
+                                                    </template>
+                                                    <template if:true={item.Extension_3__c}>
+                                                        <td class="ext">{item.Extension_3__r.Name}
+                                                            {item.Extension_Quantity_3__c} {item.Extension_Unit_3__c}
+                                                        </td>
+                                                    </template>
+                                                </tr>
+                                            </template>
+                                        </table>
+                                        <br>
+                                        <div if:true={deliveryNoteId} data-id={order.Id} style="display: none;">
+                                            <lightning-record-view-form object-api-name="DeliveryNote__c"
+                                                record-id={deliveryNoteId}>
+                                                <lightning-output-field field-name="Name">
+                                                </lightning-output-field>
+                                                <lightning-output-field field-name="Status__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field field-name="DeliveryNoteNo__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field field-name="DeliveryCompanyName__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field field-name="TruckNumber__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field field-name="DriverName__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field field-name="DeliveryType__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field class="slds-text-align_left" field-name="LoadingQuantity__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field class="slds-text-align_left" field-name="DischargeQuantity__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field class="slds-text-align_left" field-name="Price_To_MT__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field class="slds-text-align_left" field-name="Price_To_3M__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field class="slds-text-align_left" field-name="delivery_cost__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field class="slds-text-align_left" field-name="Delivery_discount__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field class="slds-text-align_left" field-name="Discount__c">
+                                                </lightning-output-field>
+                                                <lightning-output-field class="slds-text-align_left"  field-name="Total_Price__c">
+                                                </lightning-output-field>
+                                            </lightning-record-view-form>	      
+
+                                        </div>
+                                    </div>
+
+                                </template>
+                            </div>
+                        </dl>
+                        <template if:true={loadingSpinner}>
+                            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                        </template>
+                        <lightning-button class="slds-align_absolute-center" label="טען עוד הזמנות" onclick={getMoreLastOrdersRecords}></lightning-button>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <!-- Aside modal end -->
+
+        <!-- aside toggle button  -->
+        <div class={toggleBtnLastOrders}>
+            <button class="lastOrdersBtn" onclick={handleAsideToggle}>
+                <lightning-icon icon-name={lastOrdersIcon} title="הזמנות אחרונות ללקוח"></lightning-icon>
+            </button>
+        </div>
+        <!---->
+        <div class={orderContainerStyle}>
+            <div class="slds-grid slds-wrap" dir="rtl">
+                <div class={cssForOrderFormHeader}>
+                    <div class="slds-p-horizontal_small">
+                        <c-order-form-component onrecordselection={handleRecordSelect} record-id={recordId} item-status-for-lock-order-aprove={itemStatusForLockOrderAprove} is-not-customer-service={isNotCustomerService} ongetcontacts={getContacts}
+                            onsubmitcomponents={handleOrderFormValues} oncustomerremovedevent={handleOrderFormRemovedCustomer}></c-order-form-component>
+                    </div>
+                </div>
+                <div class={cssForHeaders}>
+                    <div class="slds-p-horizontal_small">
+                        <c-order-date-type-and-contacts-component account-id={accountId} branch-id={branchGrowthId} is-not-customer-service={isNotCustomerService}
+                            contacts={contacts} which-profile-type={whichProfileType} onaddnewcontact={handleNewContactAddition} onorderitemid={handleOrderItemOnReturnDeal}
+                            onordertypechange={orderTypeListener} onrendercontacts={getContacts} onprivatetransport={privateTransportHandler}
+                            onsubmitcomponents={handleOrderDateTypeTransportValues}>
+                        </c-order-date-type-and-contacts-component>
+                    </div>
+                </div>
+                <div if:true={isDesktop} class={cssForHeaders}>
+                    <div class="slds-p-horizontal_small slds-border_right">
+                        <c-order-notes-component account-id={accountId} notes={notes} record-id={recordId}
+                            onsubmitcomponents={handleOrderNotesValues}></c-order-notes-component>
+                    </div>
+                </div>
+                <div class="slds-m-around_small">
+                    <h1>
+                        <lightning-icon class="slds-m-right_small slds-m-left_xx-small" icon-name="standard:pricebook"
+                            alternative-text="products" variant="inverse" size="small">
+                        </lightning-icon>מוצרים
+                    </h1>
+
+                    <lightning-button class="slds-m-right_small slds-m-left_small" label="+ הוספת מוצר" title="הוספת מוצר לרכישה" disabled={isReturningTypeOrder} onclick={addProductHandler}>
+                    </lightning-button>
+                </div>
+                <div class={orderItemContainerStyle}>
+                    <template for:each={orderItems} for:item="item">
+                        <div key={item.id}>
+                            <!-- Crystallization_temperature__c -->
+                            <c-order-item-component account-id={accountId} profile-type={profileType} item-id={item.id} order-status={orderStatus}
+                                order-type={order.TransactionType__c} acc-settelment={accSettelment} private-transport={order.PrivateTransport__c}
+                                show-chemical={isChemicalAccount} onsubmitcomponents={handleOrderItemsValues} related-pricebook={relatedPricebook}
+                                ontankpointsadded={getTankPoints} onframedeal={getCurrentOrder} onremoveitem={remove} is-chemicals={isChemicals} is-frame-button={isFrameButton}
+                                onisframebutton={handleFrameBTN} onbooleanchange={handleBooleanChange} onprudctpricebookvalidation={getProductPriceBookValidationValue}
+                                onloadingpointid={getLoadingPointId}>
+                            </c-order-item-component>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+    <template if:false={isDesktop}>
+        <header>
+            <div>
+                <lightning-button class="slds-m-right_small slds-m-left_small" variant="brand" label={saveOrderLabel}
+                    title="שמירה ושליחת ההזמנה" onclick={validate}></lightning-button>
+                <div class="headerIcons slds-p-around_small">
+                    <template if:true={recordId}>
+                        <div class="cleanFields slds-m-left_small" onclick={duplicateOrderHandler}>
+                            <lightning-icon icon-name="utility:copy" class="duplicateIcon" size="small"
+                                alternative-text="duplicate" title="שכפול הזמנה">
+                            </lightning-icon>
+                            <p class="slds-p-around_x-small">שכפול הזמנה</p>
+                        </div>
+                    </template>
+                    <template if:false={recordId}>
+                        <div onclick={cleanScreenFields} class="cleanFields">
+                            <lightning-icon icon-name="action:delete" size="x-small" alternative-text="cleanFields"
+                                title="ניקוי שדות">
+                            </lightning-icon>
+                            <p class="slds-p-around_x-small">ניקוי שדות</p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </header>
+    </template>
+    <!--פופאפ ביטול הזמנה- Use template if:true to display/hide popup based on isModalOpen  value-->
+    <template if:true={isModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p class="slds-text-heading_large">האם לבטל את ההזמנה?</p>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={closeModal} title="Cancel">לא</button>
+                    <button class="slds-button slds-button_brand" onclick={cancleOrder} title="OK">כן</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</div>
+</template>

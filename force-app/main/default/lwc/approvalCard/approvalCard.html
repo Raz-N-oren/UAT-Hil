@@ -1,0 +1,200 @@
+<!-- approvalCard 26/1 after design btn - no btn in all ins!!!!!!!!-->
+<!-- sldsValidatorIgnore -->
+<template>
+    <div data-key={approval.recordId} class="swipe-container slds-m-bottom_small slds-p-left_small" ontouchend={handleSwipe}>
+        <!-- left action -->
+        <div class="action left">
+            <i class="material-icons">
+                <lightning-icon class="icn" icon-name="utility:close"></lightning-icon>
+            </i>
+        </div>
+        <!-- swipeable element -->
+        <div class="slds-grid swipe-element">
+            <div>
+                <div if:true={isDesktop}>
+                    <div>
+                        <input type="checkbox" class="approvalCheckbox " name="בחירה"
+                        onclick={checkboxHandler} checked={checked}>
+                    </div>
+                    <!-- <a href='' onclick={viewRecord} class="slds-m-around_x-small"
+                        data-id={approval.recordId}>{approval.relatedTo} | {approval.recordName}</a> -->
+                        <div>
+                            <lightning-button class="slds-p-around_small" data-type='Approve' label="אשר"
+                            variant="brand" onclick={handleSubmit} title="אשר">
+                        </lightning-button>
+                    </div>
+                    <div class="rejectDiv">
+                        <lightning-button class="slds-p-around_small"  data-type='Reject' label="דחה"
+                        variant="brand-outline" onclick={handleSubmit} title="דחה">
+                    </lightning-button>
+                    </div>
+                    <div>
+                        <lightning-button  class="slds-p-around_small"  label="פתח"
+                        variant="brand-outline" onclick={onOpenOppClicked} title="פתח הצעה">
+                    </lightning-button>
+                    </div>
+                </div>
+                <div class="slds-col slds-m-left_medium" if:false={isDesktop}>
+                    <lightning-button class="slds-p-around_small slds-m-around_small slds-size_1-of-12" data-type='Approve' label="אשר"
+                        variant="brand" onclick={handleSubmit} title="אשר">
+                    </lightning-button>
+                    <lightning-button class="slds-p-around_small slds-m-around_small slds-size_1-of-12" data-type='Reject' label="דחה"
+                        variant="brand-outline" onclick={handleSubmit} title="דחה">
+                    </lightning-button>
+                    <input type="checkbox" class="approvalCheckbox slds-m-around_x-small slds-size_1-of-12" name="בחירה"
+                        onclick={checkboxHandler} ontouchend={checkboxHandler} checked={checked}>
+                    <lightning-button class="slds-p-around_small slds-m-around_small slds-size_1-of-12"  label="פתח הצעה"
+                        variant="brand-outline" onclick={test} title="פתח">
+                    </lightning-button>
+                </div>
+            </div>
+            <!-- <div if:true={isDiscount} class="slds-grid slds-m-around_small slds-p-around_x-small slds-wrap slds-grid_vertical-align-start divBgColor">
+                <p class="slds-text-heading_small slds-col slds-p-around_small"><b>מוצר:</b> {approval.relatedDis.Product__r.Name}</p>
+                <p class="slds-text-heading_small slds-col slds-p-around_small"><b>הנחה מבוקשת:</b> {approval.relatedDis.Requested_Discount__c}%</p>
+                <p class="slds-text-heading_small slds-col slds-p-around_small"><b>לקוח:</b> {approval.relatedDis.Account__r.Name}</p>
+                <p class="slds-text-heading_small slds-col slds-p-around_small"><b>תאריך התחלה:</b> <lightning-formatted-date-time value={approval.relatedDis.Start_Date__c}></lightning-formatted-date-time></p>
+                <p class="slds-text-heading_small slds-col slds-p-around_small"><b>תאריך סיום:</b> <lightning-formatted-date-time value={approval.relatedDis.End_Date__c}></lightning-formatted-date-time></p>
+                <p class="slds-text-heading_small slds-col slds-p-around_small"><b>סיווג לקוח:</b> {approval.relatedDis.Account_Classification__c}</p>
+                <p class="slds-text-heading_small slds-col slds-p-around_small"><b>סיבה:</b> {approval.relatedDis.Reazon__c}</p>
+                <p class="slds-text-heading_small slds-col slds-p-around_small"><b>הנחה מקסימלית:</b> {approval.relatedDis.Max_Discount__c}%</p>
+            </div> -->
+
+            <div if:true={isDiscount} class="slds-col slds-medium-size_5-of-12 slds-large-size_10-of-12">
+
+                <!-- <div class="slds-col slds-p-around_xx-small" if:true={isDesktop}>
+                    <lightning-button style="padding-left:4px;" data-type='Approve' label="אשר" variant="brand" onclick={handleSubmit} title="אשר">
+                    </lightning-button>
+                    <lightning-button data-type='Reject' label="דחה" variant="brand-outline" onclick={handleSubmit} title="דחה">
+                    </lightning-button>
+                    <div style="padding-top: 6px;display:block;text-align: center;">
+                        <input  type="checkbox" name="בחירה" onclick={checkboxHandler} checked={checked}>
+                        <a href='' onclick={viewRecord} class="slds-m-around_x-small"
+                            data-id={approval.recordId}>{approval.relatedTo} | {approval.recordName}</a>
+                    </div>
+                </div> -->
+
+                <table>
+                    <caption if:false={isDesktop}>{approval.relatedTo} | {approval.recordName}</caption>
+                    <thead>
+                        <tr>
+                            <th>מוצר</th>
+                            <th>הנחה מבוקשת</th>
+                            <th>מחיר לטון לאחר הנחה </th>
+                            <th>לקוח</th>
+                            <!-- <th>תאריך התחלה</th> -->
+                            <th>תאריך סיום</th>
+                            <th>סיווג לקוח</th>
+                            <th>סיבה</th>
+                            <th>הנחה מקסימלית</th>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td data-label="מוצר">{discountApprovalProductName}</td>
+                        <td data-label="הנחה מבוקשת">{approval.relatedDis.Requested_Discount__c}</td>
+                        <td data-label="מחיר לטון לאחר הנחה ">{approval.relatedDis.TonPriceAfterDiscount__c}</td>
+                        <td data-label="לקוח">{accountName}</td>
+                        <!-- <td data-label="תאריך התחלה">
+                            <lightning-formatted-date-time value={approval.relatedDis.Start_Date__c}>
+                            </lightning-formatted-date-time>
+                        </td> -->
+                        <td data-label="תאריך סיום">
+                            <lightning-formatted-date-time value={approval.relatedDis.End_Date__c}>
+                            </lightning-formatted-date-time>
+                        </td>
+                        <td data-label="סיווג לקוח">{approval.relatedDis.Account_Classification__c}</td>
+                        <td data-label="סיבה">{approval.relatedDis.Reazon__c}</td>
+                        <td data-label="הנחה מקסימלית">{approval.relatedDis.Max_Discount__c}%</td>
+                    </tr>
+                </table>
+            </div>
+            <!-- <div class="slds-col slds-size_10-of-12 divBgColor" style="height: 5px !important;"> -->
+                <lightning-textarea class="slds-col slds-medium-size_5-of-12 slds-large-size_10-of-12"
+                if:false={isDiscount}
+                value={approval.recDescription}
+                readonly="true">
+                </lightning-textarea>
+
+              <label ></label>
+              <!-- <lightning-textarea if:false={isDiscount}>
+                     {approval.recDescription}  -->
+                      <!-- {getNotDisText} -->
+              <!-- </lightning-textarea> -->
+              <!-- <lightning-textarea if:false={isDiscount}>
+                {approval.recDescription}
+              </lightning-textarea> -->
+            <!-- </div> -->
+        </div>
+        <!-- right action -->
+        <div class="action right">
+            <i class="material-icons">
+                <lightning-icon class="icn" icon-name="utility:check"></lightning-icon>
+            </i>
+        </div>
+    </div>
+
+
+    <!-- rejectPopUp start -->
+    <template if:true={rejectPopUp}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-describedby="body-id-1"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                    onclick={closeRejectPopUp}>
+                    <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small">
+                    </lightning-icon>
+                </button>
+                <!-- rejectPopUp body start -->
+                <div class="slds-modal__content slds-p-around_medium" id="body-id-1">
+                    <dl class="slds-list_vertical-space slds-wrap flexCenter">
+                        <lightning-card title="את\ה בטוח\ה שאת\ה רוצה לדחות?">
+                            <div class="slds-m-top_medium">
+                                <lightning-button class="slds-m-around_x-small" type="button" label="ביטול"
+                                    onclick={closeRejectPopUp}>
+                                </lightning-button>
+                                <lightning-button class="slds-m-around_x-small" type="submit" label="אישור"
+                                    onclick={handleReject} variant="brand">
+                                </lightning-button>
+                            </div>
+                        </lightning-card>
+                    </dl>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- rejectPopUp end -->
+    <!-- View Approval record modal start -->
+    <template if:true={showApprovalRecordModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="dischargeLocationAdder" aria-modal="true"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- View Approval record modal header start -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={closeApprovalRecordModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small"></lightning-icon>
+                    </button>
+                    <h2 id="dischargeLocationAdder" class="slds-text-heading_medium slds-hyphenate">
+                        {approval.relatedTo} | {approval.recordName}
+                    </h2>
+                </header>
+                <!-- View Approval record modal body start -->
+                <div class="slds-modal__content slds-p-around_medium" id="dischargeLocationAdder2">
+                    <dl class="slds-list_vertical-space slds-wrap">
+                        <lightning-card>
+                            <div>
+                                <lightning-record-form record-id={approval.recordId} object-api-name={objectApiName}
+                                    layout-type="Full" mode="view" onsuccess={handleApprovalEditFormSucces}
+                                    onsubmit={closeApprovalRecordModal}>
+                                </lightning-record-form>
+                            </div>
+                        </lightning-card>
+                    </dl>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- View Approval record modal end -->
+</template>

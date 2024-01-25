@@ -1,0 +1,6 @@
+<apex:component controller="getPicklistLabel_Controller" access="global">
+	<apex:attribute name="recId" assignTo="{!recordId}" type="string" description="Record Id" />
+	<apex:attribute name="fieldApi" assignTo="{!fieldApiName}" type="string" description="field API Name" />
+	<apex:attribute name="ObjApi" assignTo="{!ObjApiName}" type="string" description="Object Name " />
+{!PicklistLabel}
+</apex:component>

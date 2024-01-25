@@ -1,0 +1,149 @@
+<apex:page standardController="Visit_Report__c" renderAs="PDF" showHeader="false" sidebar="false" applyBodyTag="false" applyHtmlTag="false" standardStylesheets="false">
+    <apex:stylesheet value="{!$Resource.VisitRepCSS}" />
+        <html>
+             
+        <!-- Header Section which contains the Logo as well as the information that it is a Visit -->
+        <h1 class="visit-header">{!Visit_Report__c.Name} : {!Visit_Report__c.Account__r.Name} </h1>
+        <apex:image styleClass="company-logo" id="logo1" value="{!$Resource.companyLogo}" />
+        <br class="blankRow" />
+        <br></br>
+        <br></br>
+
+        <!-- Section which provides general visit information like location and date -->
+        <div class="section-header">
+            <h2> General Information </h2>
+        </div>
+        <div>
+            <table>
+                <tr>
+                    <td class="tdLabel">
+                        {!$ObjectType.Visit_Report__c.Fields.Account__c.Label}
+                    </td>
+                    <td class="tdOutputField">
+                        <apex:outputField value="{!Visit_Report__c.Account__r.Name}" />
+                    </td>
+                    <td class="tdLabel">
+                        {!$ObjectType.Visit_Report__c.Fields.Visit_Date__c.Label}
+                    </td>
+                    <td class="tdOutputField">
+                        <apex:outputText value="{0, date, MMMM-dd-yyyy}">
+                            <apex:param value="{!Visit_Report__c.Visit_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdLabel">
+                        {!$ObjectType.Visit_Report__c.Fields.Visit_Type__c.Label}
+                    </td>
+                    <td class="tdOutputField">
+                        <apex:outputField value="{!Visit_Report__c.Visit_Type__c}" />
+                    </td>
+                    
+                </tr>
+                <td class="tdLabel">
+                   Account Owner
+                </td>
+                <td class="tdOutputField">
+                    <apex:outputField value="{!Visit_Report__c.Account__r.Owner.Name}" />
+                </td>
+            <tr>
+            </tr>
+            <tr>
+                
+                <td class="tdLabel">
+                    {!$ObjectType.Visit_Report__c.Fields.Status__c.Label}
+                </td>
+                <td class="tdOutputField">
+                    <apex:outputField value="{!Visit_Report__c.Status__c}" />
+                </td>
+            </tr>     
+            </table>
+        </div>
+         <!-- Section will provide information about the conducted Visit like a summary -->
+         <div class="section-header">
+            <h2>Summary Points</h2>
+        </div>
+        <div>
+            <table>
+                <div class="blankRow">
+                </div>
+                <div class="inlineDivs">
+                    <table width="100%">
+                        <tr>
+                            <td class="tdLabel">
+                                {!$ObjectType.Visit_Report__c.Fields.Objectives__c.Label}
+                            </td>
+                            <td class="tdOutputFieldLong">
+                                <apex:outputText escape="false" value="{!Visit_Report__c.Objectives__c}" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="blankRow">
+                </div>
+                <div class="inlineDivs">
+                    <table width="100%">
+                        <tr>
+                            <td class="tdLabel">
+                                {!$ObjectType.Visit_Report__c.Fields.Summary__c.Label}
+                            </td>
+                            <td class="tdOutputFieldLong">
+                                <apex:outputText escape="fales" value="{!Visit_Report__c.Summary__c}" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="blankRow">
+                </div>
+                <div class="inlineDivs">
+                    <table width="100%">
+                        <tr>
+                            <td class="tdLabel">
+                                {!$ObjectType.Visit_Report__c.Fields.Report__c.Label}
+                            </td>
+                            <td class="tdOutputFieldLong">
+                                <apex:outputText escape="false" value="{!Visit_Report__c.Report__c}" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="blankRow">
+                </div>
+                <div class="inlineDivs">
+                    <apex:outputPanel rendered="{!!ISBLANK(Visit_Report__c.Next_Stap__c)}">
+                    <table width="100%">
+                        <tr>
+                            <td class="tdLabel">
+                                {!$ObjectType.Visit_Report__c.Fields.Next_Stap__c.Label}
+                            </td>
+                            <td class="tdOutputFieldLong">
+                                <apex:outputText escape="false" value="{!Visit_Report__c.Next_Stap__c}" />
+                            </td>
+                        </tr>
+                    </table>
+                    </apex:outputPanel>
+                </div>                               
+                <div class="blankRow">
+                </div>
+            </table>
+        </div>
+ <!-- This section displays all related Sample Requests linked to the Visit Report and some of its details -->
+ <div class="section-header">
+    <h2>{!$ObjectType.Visit_report_Contacts__c.LabelPlural}</h2>
+</div>
+
+<table class="table1" width="100%">
+    <tr>
+        <th class="table-header"> {!$ObjectType.Visit_report_Contacts__c.Fields.Name.Label} </th>
+        <th class="table-header"> {!$ObjectType.Visit_report_Contacts__c.Fields.Contact__c.Label} </th>
+        
+    </tr>
+    <apex:repeat var="sample" value="{!Visit_Report__c.Visit_report_Contacts__r}" >
+        <tr>
+            <td> {!sample.Name} </td>
+            <td> <apex:outputField value="{!sample.Contact__r.Name}" /> </td>
+        </tr>
+    </apex:repeat>
+</table>
+        </html>
+</apex:page>

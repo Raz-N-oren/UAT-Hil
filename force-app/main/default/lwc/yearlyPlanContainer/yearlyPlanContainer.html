@@ -1,0 +1,36 @@
+<template>
+  
+  <div class = "main-element">
+    
+    <div class="slds-grid slds-gutters">
+      <!--form - אזור מילוי הטופס-->
+      <div class="slds-col slds-size_1-of-3">
+        <c-yearly-plan-edit 
+        onrefreshopplist={refreshOppLineList}
+        opp-record-id={recordId}
+        account-id={accountId}
+        ></c-yearly-plan-edit>
+      </div>
+      <div class="slds-col slds-size_2-of-3" style="margin-top:20px;">
+        <lightning-card title="תוכנית שנתית" icon-name="custom:custom5">
+          <!--כפתור שכפול-->
+          <div slot="actions">
+            <c-yearly-plan-clone
+            opp-id-to-clone={recordId}
+            account-id={accountId}
+            account-name={accountName}
+            ></c-yearly-plan-clone>
+          </div>
+          <!--הטבלה-->
+          <c-yearly-plan
+          ondeletedopplines={preperOppProductDelete}
+          onopplineidsent={updateOppProductrecordId}
+          onopplineidclone={preperOppProductClone}
+          record-id={recordId}
+          ></c-yearly-plan>
+        </lightning-card>
+      </div>
+    </div>
+  </div>
+  
+</template>

@@ -1,0 +1,237 @@
+/* header{
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(226, 226, 226);
+    border-radius: 8px;
+    margin: 2px 0px 15px 0px;
+    padding: 4px;
+} */
+
+.mobileHeader{
+    /* width: 100%;
+    height: auto; */
+    /* display: flex; */
+    /* align-items: center; */
+    font-size: 0.7rem;
+    background-color: rgb(226, 226, 226);
+    border-radius: 6px;
+    margin: 2px 0px 15px 0px;
+    padding: 4px;
+}
+
+.tabletHeader{
+    /* width: 100%;
+    height: auto;
+    display: flex; */
+    /* align-items: center; */
+    background-color: rgb(226, 226, 226);
+    border-radius: 8px;
+    margin: 2px 0px 15px 0px;
+    padding: 4px;
+}
+
+.desktopHeader{
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(226, 226, 226);
+    border-radius: 8px;
+    margin: 2px 0px 15px 0px;
+    padding: 4px;
+}
+
+.headerDesktopDiv{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footerDesktopDiv{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 36px;
+}
+
+.headerMobileDiv{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.headerIcons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+}
+
+.status{
+    background-color: rgb(250, 244, 160);
+    border-radius: 2rem;
+    line-height: 1.1rem;
+}
+
+.submitBtn{
+    /* background-color: var(--slds-c-button-brand-color-background, #5fff02) */
+    /* line-height: var(--slds-c-button-line-height, 3rem) !important; */
+    /* --slds-c-button-line-height: 1.001rem !important; */
+    /* --slds-c-button-line-height: */
+    font-size: 10px !important;
+}
+
+/* .slds-button > button{
+    line-height: var(--slds-c-button-line-height, 3rem) !important;
+} */
+
+.header-submit{
+    /* --slds-c-button-brand-line-height: 1rem !important; */
+    /* --slds-c-button-brand-height: 1rem !important; */
+    --slds-c-button-brand-spacing-inline-start: 0rem; 
+   --slds-c-button-brand-spacing-inline-end: 0rem;
+}
+
+/* @media (max-width: 800px)
+{
+    :host {
+        --slds-c-button-line-height: 1rem !important
+    }
+} */
+
+.lastOrdersBtn{
+    height: 5px;
+    background-color: transparent;
+    border: none;
+}
+
+.container{
+    display: flex;
+    background-color: white;
+}
+
+aside{
+    overflow-x: hidden;
+}
+
+.hidden{
+    display: none;
+}
+
+.mainBtn{
+    padding: 1.15px 16px;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-box-pack: center;
+    position: relative;
+    align-items: center;
+    color: #ffffff;
+    font-size: 13px;
+    font-family: sans-serif;
+    cursor: pointer;
+    /* background-color: rgb(218, 142, 91); */
+    background-color: #0070d2;
+    margin: 5px 0px;
+    border-radius: 7px;
+    line-height: 2.6rem;
+    text-decoration: none;
+    border: none;
+}
+
+@media (max-width: 360px) {
+    .mainBtn {
+        font-size: 10px;
+        line-height: 2rem;
+    }
+}
+
+.mainBtn:hover{
+    /* background-color: rgb(175, 116, 77); */
+    
+    background-color: #075294;
+}
+
+.mainBtn:focus{
+    box-shadow: rgb(72, 137, 194) 0px 0px 5px;
+}
+
+.mainBtn:disabled,
+.mainBtn[disabled]{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+  cursor: auto;
+}
+
+.addProductBtn{
+    padding: 1.15px 16px;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-box-pack: center;
+    position: relative;
+    align-items: center;
+    color: #ffffff;
+    font-size: 13px;
+    font-family: sans-serif;
+    cursor: pointer;
+    background-color: #0070d2;
+    margin: 5px;
+    border-radius: .25rem;
+    line-height: 1.875rem;
+    text-decoration: none;
+    border: none;
+}
+
+.addProductBtn:hover{
+    /* background-color: rgb(175, 116, 77); */
+    
+    background-color: #075294;
+}
+
+.addProductBtn:focus{
+    box-shadow: rgb(72, 137, 194) 0px 0px 5px;
+}
+
+.fontSizeLarge{
+    font-size: x-large;
+    padding: 1.65px 20px;
+}
+
+h1{
+    font-size: larger;
+    font-weight: bolder;
+    padding: 4px;
+}
+
+.modal{
+    position: fixed;
+    background-color: white;
+    top: 0;
+    bottom: 0;
+    right: 50%;
+    left: 0;
+}
+
+.slidein{
+    animation: slide-right 1s forwards;
+    transform:translateX(-100%);
+}
+
+.pointer {cursor: pointer;}
+
+@keyframes slide {
+    to { left: 50%; }
+}
+@keyframes slide-right {
+    to {
+      transform:translateX(0);
+    }
+}
+.disabled{
+    pointer-events: none;
+    opacity: 0.8;
+}

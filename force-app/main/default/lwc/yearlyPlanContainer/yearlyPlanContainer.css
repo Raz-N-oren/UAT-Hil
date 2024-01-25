@@ -1,0 +1,20 @@
+@media only screen and (max-width: 1550px){
+    /* 125% on 1920X1080 */
+    .main-element{
+        zoom: 0.8;
+    } 
+}
+@media only screen and (max-width: 1300px){
+    /* 150% on 1920X1080 */
+    .main-element{
+        zoom: 0.66; 
+    } 
+}
+
+
+c-yearly-plan  {
+    font-size: x-small;
+}
+c-yearly-plan-edit{
+    font-size: xx-small;
+}

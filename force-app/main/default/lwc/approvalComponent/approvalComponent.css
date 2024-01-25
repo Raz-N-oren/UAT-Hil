@@ -1,0 +1,34 @@
+div.sticky-header{
+  position: -webkit-sticky;
+  position: sticky;
+  top: 12%;
+  z-index: 1;
+  width: 100%;
+  background-color: white;
+}
+div.header{
+  background-color: white;
+}
+
+.icn{
+    --sds-c-icon-color-foreground-default: white; 
+}
+
+.swipe-container {
+    background-color: white;
+    /* cursor: pointer; */
+  }
+
+  :host {
+    --sds-c-textarea-sizing-min-height: 130px;
+}
+
+.cardsContainer{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.btnStateful{
+  margin-top: 33.5px;
+}

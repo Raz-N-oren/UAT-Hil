@@ -1,0 +1,18 @@
+.margin{
+    margin-top: 10px;
+}
+
+.disabled, .disabled:hover {
+    pointer-events:none; /* This makes it not clickable */
+    /* opacity:0.6;*/         /* This grays it out to look disabled */
+    /* background-color:rgb(243, 243, 243); */
+}
+.pillsDiv{
+    margin-top:5px;
+}
+
+.pillsDivDesktop{
+    margin-top:5px;
+    position: absolute;
+    z-index: 2;
+}

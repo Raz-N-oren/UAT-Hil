@@ -1,0 +1,40 @@
+.form-edit{
+    margin-top: 20px; 
+}
+
+.cards-title{
+    margin-top: 20px;  
+}
+
+.main-element{
+    padding-left:20px;
+}
+
+.sum{
+    --sds-c-card-color-background: #ffffff;
+
+}
+
+.container-sum{
+    background-color: #fff;
+    margin-right: 1px;
+    border-radius: 1px;
+    margin-top:2px;
+    margin-bottom:0px;
+    position: -webkit-sticky;
+    position: sticky;
+    bottom: 0px;
+    z-index: 2;
+    box-shadow: 0 -2px 19px 0 rgba(0, 0, 0, 0.1);
+    border: solid 1px #f3f2f2; 
+}
+
+.container-data-text{
+    font-size: x-small;
+    text-align: center;
+
+}
+
+.hide{
+    display: none;
+}

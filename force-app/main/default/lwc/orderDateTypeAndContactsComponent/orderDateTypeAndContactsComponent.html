@@ -1,0 +1,176 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <div class="slds-grid slds-wrap slds-col slds-listbox__option">
+        <lightning-input class="slds-size_x-small slds-col slds-size_1-of-1 slds-large-size_1-of-3" value={rec.requestedSupplyDate} min={todayGetter}
+            type="date" name="input1" label="תאריך מבוקש" onchange={dateHandler}></lightning-input>
+            <!--אינפוט סוג עסקה-->
+        <lightning-combobox if:true={isDesktop} class="slds-listbox__option slds-col slds-large-size_1-of-3 slds-size_x-small slds-m-left_small slds-m-right_small"
+            name="progress" label="סוג עסקה" value={rec.orderType} placeholder="Select Progress" options={options} 
+            disabled={disableOrderType} onchange={changeOrderType}>
+        </lightning-combobox> 
+        <div if:true={isAffiliationOrder} class="slds-col slds-large-size_1-of-3">
+            <c-order-generic-lookup object-name="DeliveryNote__c" searchlabel="מספר תעודת משלוח" selected-record-id={rec.deliveryNote.id}
+            selected-value={rec.deliveryNote.name} fields-to-query={deliveryNoteFieldsToQuery} icon-name="custom:custom31" required="true"
+            onrecordselection={handleDeliveryNoteChange} get-all-on-focus="true"
+            message-for-last-view='תעודות משלוח מהזמנות קודמות..' search-placeholder="חיפוש תעודת משלוח"
+            extrawhereclause={deliveryNoteExtraWhereClause} message={realtorMessage}>
+        </c-order-generic-lookup>
+        </div>
+        <div class="slds-col slds-grid slds-size_1-of-1 slds-large-size_1-of-3 start slds-m-top_medium slds-m-left_medium slds-m-right_medium">
+            <input type="checkbox" id="privateTransport" checked={rec.privateTransport} onchange={handleCheckboxChange}
+                class="slds-p-around_xx-small">
+            <label for="privateTransport" class="slds-p-around_xx-small">הובלה פרטית</label><br>
+        </div> 
+    </div>
+
+    <div if:true={isReturningOrder} class="slds-grid white-bgc slds-col slds-wrap slds-gutters_x-small">
+        <lightning-record-edit-form object-api-name="Order" class="slds-col slds-large-size_2-of-2">
+            <div class="slds-grid">
+                <div class="slds-col slds-large-size_1-of-2">
+                    <c-order-generic-lookup object-name="DeliveryNote__c" searchlabel="מספר תעודת משלוח" selected-record-id={rec.deliveryNote.id}
+                    selected-value={rec.deliveryNote.name} fields-to-query={deliveryNoteFieldsToQuery} icon-name="custom:custom31" required="true"
+                    onrecordselection={handleDeliveryNoteChange} get-all-on-focus="true" message-for-last-view='תעודות משלוח מהזמנות קודמות..' search-placeholder="חיפוש תעודת משלוח"
+                    extrawhereclause={deliveryNoteExtraWhereClause} message={realtorMessage}>
+                </c-order-generic-lookup>
+                </div>
+                <div class="slds-col slds-large-size_1-of-2">
+                    <label class="slds-form-element__label" for="combobox-id-5"><abbr title="required" class="slds-required">*</abbr>אחריות</label>
+                    <lightning-input-field field-name="responsibility__c" value={rec.responsibility} data-label="אחריות" required="true" variant="label-hidden" onchange={responsibilityHandler}>
+                    </lightning-input-field>
+                </div>
+            </div>
+        </lightning-record-edit-form>
+        <lightning-record-edit-form object-api-name="Order" class="slds-col slds-large-size_2-of-2">
+            <div class="slds-grid">
+                <!--סיבת החזרה-->
+                <div class="slds-col slds-large-size_1-of-2">
+                    <label class="slds-form-element__label" for="combobox-id-5"><abbr title="required" class="slds-required">*</abbr>סיבת החזרה</label>
+                    <lightning-input-field field-name="reasonForReturn__c" value={rec.reasonForReturn} data-label="סיבת החזרה" required="true" variant="label-hidden" onchange={reasonForReturnHandler}>
+                    </lightning-input-field>
+                </div>
+                <!--תיאור-->
+                <div if:true={isLogisticsReason} class="slds-col slds-large-size_1-of-2">
+                    <label class="slds-form-element__label" for="combobox-id-5"><abbr title="required" class="slds-required">*</abbr>תיאור</label>
+                    <lightning-input-field field-name="reasonForReturnDescription__c" required={isLogisticsReason} data-label="תיאור" value={rec.reasonForReturnDescription} variant="label-hidden" onchange={reasonForReturnDescriptionHandler}>
+                    </lightning-input-field>
+                </div>
+            </div>
+        </lightning-record-edit-form>
+    </div>
+    <template if:true={isDesktop}>
+        <div class={isReturningContactTableHeightChange}>
+            <table>
+                <tr>
+                    <th>שם</th>
+                    <th>טלפון</th>
+                    <th>טלפון נוסף</th>
+                    <th>מייל</th>
+                </tr>
+                <template for:each={getContacts} for:item="contact">
+                    <tr key={contact.Id}>
+                        <td>{contact.Name}</td>
+                        <td>{contact.Phone}</td>
+                        <td>{contact.MobilePhone}</td>
+                        <td>
+                            <lightning-helptext content={contact.Email} data-mail={contact.Email}
+                                onclick={handleMailCopy} alternative-text="Email" icon-name="utility:email">
+                            </lightning-helptext>
+                            <lightning-icon icon-name="utility:edit" onclick={handleContactPopUp} data-id={contact.Id}
+                                class="editIcon" alternative-text="Edit" size="xx-small" title="Edit">
+                            </lightning-icon>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+            </table>
+
+            <!-- Add New-Contact modal start -->
+            <template if:true={aShowModal}>
+                <section role="dialog" tabindex="-1" aria-labelledby={rowId} aria-modal="true" aria-describedby="body-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <!-- new-contact modal header start -->
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeNewContactModal}>
+                                <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+                            </button>
+                            <h2 id="heading-id-1" class="slds-text-heading_medium slds-hyphenate">הוספת איש קשר חדש </h2>
+                        </header>
+                        <!-- new-contact modal body start -->
+                        <div class="slds-modal__content slds-p-around_medium" id="body-id-1">
+                            <dl class="slds-list_vertical-space slds-wrap">
+                                <lightning-card>
+                                    <div>
+                                        <lightning-record-edit-form class="new" onsubmit={handleNewContactSubmit} onerror={handleNewContactError} onsuccess={handleNewContactSuccess} object-api-name="Contact" record-id={rowId}>
+                                            <lightning-messages></lightning-messages>
+                                            <lightning-input-field class="" field-name="FirstName"></lightning-input-field>
+                                            <lightning-input-field class="" field-name="LastName"></lightning-input-field>
+                                            <lightning-input-field class="validateMobile" type="tel" field-name="MobilePhone" required="true"></lightning-input-field>
+                                            <lightning-input-field class="validatePhone" type="tel" field-name="Phone"></lightning-input-field>
+                                            <lightning-input-field class="" field-name="Email"></lightning-input-field>
+                                            <!-- <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_2-of-12 max-width-input" field-name="Job_Tittle__c" variant="label-stacked" value={contact} onchange={test}  required></lightning-input-field> -->
+                                            <lightning-input-field class="" field-name="OperationalContact__c" value={trueBoo}></lightning-input-field>
+                                            <lightning-input-field class=" hidden" field-name="AccountId"  value={accountId}> </lightning-input-field>
+                                            <div class="slds-m-top_medium footerButtons">
+                                                <lightning-button class="slds-m-around_x-small" type="button" label="ביטול" onclick={closeNewContactModal}></lightning-button>
+                                                <lightning-button class="slds-m-around_x-small" type="submit" label="שמירה" variant="brand">
+                                                </lightning-button>
+                                            </div>
+                                        </lightning-record-edit-form>
+                                    </div>
+                                </lightning-card>
+                            </dl>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+            <!-- Add New-Contact modal end -->
+
+        </div>
+    </template>
+    <!-- Edit-Contact modal start -->
+    <template if:true={bShowModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby={rowId} aria-modal="true" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- edit modal header start -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+                    </button>
+                    <h2 id={rowId} class="slds-text-heading_medium slds-hyphenate">עריכת פרטי איש קשר </h2>
+                </header>
+                <!-- edit modal body start -->
+                <div class="slds-modal__content slds-p-around_medium" id={rowId}>
+                    <dl class="slds-list_vertical-space slds-wrap">
+                        <lightning-card>
+                            <div>
+                                <!-- <lightning-record-edit-form class="new" onsubmit={handleNewContactSubmit} onerror={handleNewContactError} onsuccess={handleNewContactSuccess} object-api-name="Contact"> -->
+
+                                <lightning-record-edit-form class="edit" onsubmit={handleEditContactSubmit} onsuccess={handleEditSucces} onerror={handleEditFailure} object-api-name="Contact" record-id={rowId}>
+                                    <lightning-messages></lightning-messages>
+                                    <lightning-input-field field-name="FirstName"></lightning-input-field>
+                                    <lightning-input-field field-name="LastName"></lightning-input-field>
+                                    <lightning-input-field field-name="Phone"> </lightning-input-field>
+                                    <lightning-input-field field-name="MobilePhone"></lightning-input-field>
+                                    <lightning-input-field field-name="Email"> </lightning-input-field>
+                                    <lightning-input-field field-name="OperationalContact__c"></lightning-input-field>
+                                    <lightning-input-field class="hidden" field-name="AccountId" value={accountId}></lightning-input-field>
+                                    <div class="slds-m-top_medium footerButtons">
+                                        <lightning-button class="slds-m-around_x-small" type="button" label="ביטול" onclick={closeModal}></lightning-button>
+                                        <lightning-button class="slds-m-around_x-small" type="submit" label="שמירה" variant="brand"></lightning-button>
+                                    </div>
+                                </lightning-record-edit-form>
+                            </div>
+                        </lightning-card>
+                    </dl>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- Edit-Contact modal end -->
+    <template if:true={isDesktop}>
+        <lightning-button label="+ הוספת איש קשר" variant="base" title="הוספת איש קשר חדש ללקוח"
+            class="slds-m-left_x-small" onclick={openNewContactModal}></lightning-button>
+    </template>
+</template>

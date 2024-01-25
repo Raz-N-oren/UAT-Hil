@@ -1,0 +1,151 @@
+<template>
+    <header class={headerClass} dir="rtl">
+        <div class={headerDivClass} if:true={showNameAndStatus}>
+            <div class="headerIcons">
+                <lightning-icon class="slds-m-right_medium" icon-name="utility:display_text"
+                    alternative-text="orderNumber" title="שם ההזמנה">
+                </lightning-icon>
+                <p class="slds-p-around_x-small">{headerLabel}</p>
+            </div>
+
+            <div class="status slds-m-left_medium">
+                <p class="slds-p-around_x-small">{oppStatus}</p>
+            </div>
+
+            <div class="headerIcons" if:true={isDesktop}>
+                <lightning-icon class="slds-m-left_medium" icon-name="custom:custom108" size="small"
+                    alternative-text="scope" title="תחום"></lightning-icon>
+                <p class="slds-p-around_x-small">{oppScope}</p>
+            </div>
+        </div>
+
+        <div class={headerDivClass}>
+            <div class="headerIcons" if:false={isDesktop}>
+                <lightning-icon class="slds-m-right_medium" icon-name="custom:custom108" size="small"
+                    alternative-text="scope" title="תחום"></lightning-icon>
+                <p class="slds-p-around_x-small">{oppScope}</p>
+            </div>
+            <div class="headerIcons">
+                <lightning-button if:true={displayExtraBtns} class="slds-m-around_small" label='חיוב לקוח'
+                    disabled={isNotDraft} title='חיוב לקוח' onclick={openExtraFieldsToChargeClient}></lightning-button>
+            </div>
+            <div class="headerIcons">
+                <lightning-button if:true={displayExtraBtns} class="slds-m-around_small" label='העברה למחסן קונסיגנציה'
+                    disabled={isNotDraft} title='העברה למחסן קונסיגנציה' onclick={submitTransferToConsignmentWarehouse}>
+                </lightning-button>
+            </div>
+            <div class="headerIcons">
+                <lightning-button if:true={displayCloseOppBtn} class="slds-m-around_small" label='סגירת הצעת מחיר'
+                    title='סגירת הצעת מחיר' onclick={updatePricebookAndClosedQuate}>
+                </lightning-button>
+            </div>
+            <div class="headerIcons slds-p-around_small pointer" onclick={resetForm} if:false={recordId}>
+                <lightning-icon icon-name="action:delete" size="x-small" alternative-text="Clean Fields"
+                    title="ניקוי שדות">
+                </lightning-icon>
+                <p class="slds-p-around_x-small">ניקוי שדות</p>
+            </div>
+
+            <div class="headerIcons pointer" onclick={copyRec} if:true={recordId}>
+                <lightning-icon icon-name="utility:copy" size="small" alternative-text="Copy Price Offer" title="שכפול">
+                </lightning-icon>
+                <p class="slds-p-around_x-small">שכפול</p>
+            </div>
+
+            <lightning-button class="slds-m-around_small" label={btnText} variant="brand" disabled={isSubmitPriceOfferAviabale}
+                title={btnText} onclick={submitPriceOffer}></lightning-button>
+        </div>
+    </header>
+<div class={container}>
+    <lightning-card title={title} dir="rtl">
+        <c-price-offer-head record-id={recordId} onupdatewrapper={updateOppData} onoppsuccess={oppSubmited}
+            onaccselected={updateAccountId} onapproveoppvalidation={approveOppValidation}
+            onupdatecontractorandwarehouse={updateContractorAndWarehouse}
+            onupdatedefaultunitofmeasure={updateDefaultUnitOfMeasure}>
+        </c-price-offer-head>
+    </lightning-card>
+
+    <lightning-card title="מוצרים" dir="rtl">
+        <c-price-offer-body record-id={recordId} submited-opp-rec={submitedOppRec} opp-record={oppRecord}
+            onfertjob1infoupdate={fertJob1InfoUpdate} onfertjob2infoupdate={fertJob2InfoUpdate} account-id={accountId}
+            onapproveolisvalidation={approveOlisValidation} onupdateorderdata={updateOrderData} default-currency-iso-code={defaultCurrencyIsoCode}
+            onapproveoliscreation={approveOliscreation} onfertjobpriceupdate={fertJobPriceUpdate} onbasepricevalidation={getBasePriceValidation}></c-price-offer-body>
+    </lightning-card>
+    <footer class={headerClass} dir="ltr">
+        <div class={footerDivClass} if:true={showNameAndStatus}>
+            <lightning-button class="slds-m-around_small" label={btnText} variant="brand" disabled={isSubmitPriceOfferAviabale}
+            title={btnText} onclick={submitPriceOffer}></lightning-button>
+        </div>
+    </footer>
+</div>
+    <lightning-button class="slds-m-around_medium" variant="brand" label={btnText} disabled={isNotDraft}
+        title="שמירת / עדכון הצעת המחיר" type="submit" onclick={submitPriceOffer} if:false={isDesktop}>
+    </lightning-button>
+
+    <!-- customer charge modal start -->
+    <template if:true={showExtraFieldsToCharge}>
+        <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- customer charge modal header start -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={closeExtraFieldsToCharge}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small"></lightning-icon>
+                    </button>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">פרטים נוספים עבור חיוב הלקוח
+                    </h2>
+                </header>
+                <!-- customer charge modal body start -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <dl class="slds-list_vertical-space slds-wrap">
+                        <lightning-card>
+                            <div class="slds-grid slds-grid_vertical">
+                                <lightning-input class="slds-col" max={today} type="date" name="input1"
+                                    label="תאריך ביצוע" onchange={dateHandler} value={orderData.executionDate}></lightning-input>
+                                <lightning-input class="slds-col" type="number" name="input1" label="כמות דונמים בפועל"
+                                    onchange={plotsSizeHandler} value={orderData.plotsSize}></lightning-input>
+                                <div if:true={orderData.quantity1} class="slds-col slds-grid slds-gutters">
+                                    <lightning-input class="slds-col slds-size_2-of-3" type="number"
+                                        value={orderData.quantity1} label={orderData.product1.name}
+                                        onchange={quantity1Handler}></lightning-input>
+                                    <lightning-combobox class="slds-col slds-size_1-of-3" name="unitOfMeasure"
+                                        placeholder="יחידת מידה" value={orderData.unitOfMeasure1} label="יחידת מידה"
+                                        options={unitOfMeasureOptions} onchange={unitOfMeasure1Handler}>
+                                    </lightning-combobox>
+                                </div>
+                                <div if:true={orderData.quantity2} class="slds-col slds-grid slds-gutters">
+                                    <lightning-input class="slds-col slds-size_2-of-3" value={orderData.quantity2}
+                                        type="number" label={orderData.product2.name} onchange={quantity2Handler}>
+                                    </lightning-input>
+                                    <lightning-combobox class="slds-col slds-size_1-of-3" name="unitOfMeasure"
+                                        placeholder="יחידת מידה" value={orderData.unitOfMeasure2} label="יחידת מידה"
+                                        options={unitOfMeasureOptions} onchange={unitOfMeasure2Handler}>
+                                    </lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-m-around_small slds-grid">
+                                    <label for="craneCheckbox" class="slds-p-around_small">מנוף</label><input checked={orderData.crane}
+                                        class="slds-p-around_small" type="checkbox" name="" id="craneCheckbox" onchange={craneCheckboxHandler}>
+                                </div>
+                                <lightning-input class="slds-col" type="number" name="input1" label="ימי עגלה" value={orderData.trailerDays}
+                                    step="0.01" onchange={trailerDaysHandler}></lightning-input>
+                                <lightning-input class="slds-col" type="number" name="input1" value={orderData.contractorPricePerAcre}
+                                    label="מחיר לדונם תשלום לקבלן" step="0.01" onchange={contractorPricePerAcreHandler}></lightning-input>
+                            </div>
+                            <div class="slds-m-top_medium">
+                                <lightning-button class="slds-m-around_x-small" type="button" label="ביטול"
+                                    onclick={closeExtraFieldsToCharge}>
+                                </lightning-button>
+                                <lightning-button class="slds-m-around_x-small" type="submit" label="שמירה"
+                                    variant="brand" onclick={submitChargeClient}>
+                                </lightning-button>
+                            </div>
+                        </lightning-card>
+                    </dl>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- customer charge modal end -->
+</template>

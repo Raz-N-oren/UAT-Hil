@@ -1,0 +1,310 @@
+<template>
+    <div class="slds-p-around_medium oppLine">
+        <div class="slds-grid slds-gutters slds-wrap">
+            <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-4">
+                <lightning-record-edit-form object-api-name="OpportunityLineItem" class="fertJob" record-id={oliId}
+                    onsubmit={submitForm} onsuccess={handleSuccess} onerror={handleError}>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <c-order-generic-lookup
+                            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_4-of-12"
+                            searchlabel="מוצר (סוג עבודה)" object-name="Product2"
+                            message-for-last-view="מוצרים אחרונים שנצפו.." icon-name="standard:product"
+                            last-viewed-fields={lookupFields} fields-to-query={lookupFields} get-last-viewed="true"
+                            onrecordselection={prodSelected} selected-value={prodName} selected-record-id={prodId}
+                            extrawhereclause={extrawhereclause} read-only={isNotDraft} required="true">
+                        </c-order-generic-lookup>
+
+                        <div class="plots-picklist slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_4-of-12">
+                            <p class="plotTotalDunams"> {totalDunams} </p>
+                            <template if:true={accountId}>
+                                <lightning-icon icon-name={isForEditIcon} class="editIcon plotAddingIcon" alternative-text="Edit" size="xx-small" title={isForEditTitle} onclick={plotModalAdderHandler}>
+                            </lightning-icon>
+                                <!-- <c-plots-create-form acc-id={accountId} is-btn-icon-not-btn="true"></c-plots-create-form> -->
+                            </template>
+                            <c-mutli-select-picklist id="mspl" onselectedvaluesent={updateSelectedPlots} onupdaterequest={updateMultiSelect} picklistlabel="חלקות" placeholder="בחר חלקות" values={allPlotsData} disabled={isNotDraft} required="true"></c-mutli-select-picklist>
+                        </div>
+
+                        <lightning-input-field field-name="Cost_level__c" variant="label-stacked" class="slds-size_1-of-2 slds-large-size_2-of-12" onchange={costLevelChanged} value={costLevel} disabled={isNotDraft} required></lightning-input-field>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_4-of-12">
+                            <label class="slds-form-element__label">
+                                <abbr title="required" class="slds-required">*</abbr>
+                                מקום פריקה
+                                <template if:true={accountId}>
+                                    <lightning-icon icon-name={isForEditIcon} class="editIcon slds-m-left_x-small" alternative-text="Edit" size="xx-small" title={isForEditTitle} onclick={editTankPointHandler}>
+                                    </lightning-icon>
+                                </template>
+                            </label>
+                            <c-order-generic-lookup object-name="Tank__c" selected-value={dischargeLocationName} 
+                                selected-record-id={dischargeLocationId} fields-to-query={tankPointsFields}
+                                onrecordselection={dischargeLocationChanged} get-all-on-focus="true"
+                                message-for-last-view='מקומות פריקה מהזמנות קודמות..' search-placeholder="חיפוש נקודת פריקה"
+                                extrawhereclause={tankPointsExtraWhereClause}>
+                            </c-order-generic-lookup>
+                        </div>
+
+                        <lightning-input-field field-name="Need_a_cart__c" variant="label-stacked"
+                            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-12"
+                            value={needCart} onchange={needCartChanged} disabled={isNotDraft} required>
+                        </lightning-input-field>
+                    </div>
+
+                    <!-- Hidden fields -->
+                    <div class="slds-hide">
+                        <lightning-button class="slds-m-top_small fertJobSubmit" type="submit" label="submit">
+                        </lightning-button>
+                    </div>
+                </lightning-record-edit-form>
+
+                <lightning-record-edit-form object-api-name="OpportunityLineItem" class="fert1" record-id={fertId1}
+                    onsubmit={submitFert1} onsuccess={handleFert1Success} onerror={handleFertError}>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_4-of-12">
+                            <label class="slds-form-element__label slds-no-flex" for="fert1">
+                                <abbr title="required" class="slds-required">*</abbr>
+                                דשן
+                            </label>
+                            <lightning-input-field id="fert1" field-name="Product2Id" variant="label-hidden"
+                                onchange={firstProductChanged} value={firstProduct} disabled={isNotDraft} required>
+                            </lightning-input-field>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-12">
+                            <lightning-input-field id="quant1" field-name="Quantity_per_hectare__c"
+                                variant="label-stacked" 
+                                value={firstProdQuantity} 
+                                onchange={firstProdQuantityChanged}
+                                disabled={isNotDraft} required></lightning-input-field>
+                        </div>
+
+                        <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_2-of-12"
+                            field-name="Unit_of_measure__c" variant="label-stacked" value={firstUnitOfMeasure}
+                            onchange={firstUnitOfMeasureChanged} disabled={isNotDraft} required></lightning-input-field>
+
+                        <!-- Left side - summery  -->
+                        <div
+                            class="verticalLineRight slds-p-top_small slds-col slds-size_1-of-2 slds-large-size_4-of-12">
+                            {firstPriceDiscount}
+                            </br>
+                            <del>{firstPrice}</del>
+                        </div>
+                    </div>
+
+                    <!-- Hidden fields -->
+                    <div class="slds-hide">
+                        <lightning-button class="slds-m-top_small fert1Submit" type="submit" label="submit">
+                        </lightning-button>
+                    </div>
+                   
+                </lightning-record-edit-form>
+
+                <lightning-record-edit-form object-api-name="OpportunityLineItem" class="fert2" record-id={fertId2}
+                    onsubmit={submitFert2} onsuccess={handleFert2Success} onerror={handleFertError}
+                    if:true={isTwoFertJob}>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_4-of-12">
+                            <label class="slds-form-element__label slds-no-flex" for="fert2">
+                                <abbr title="required" class="slds-required">*</abbr>
+                                דשן
+                            </label>
+                            <lightning-input-field id="fert2" field-name="Product2Id" variant="label-hidden"
+                                onchange={secondProductChanged} value={secondProduct} disabled={isNotDraft} required>
+                            </lightning-input-field>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_2-of-12">
+                            <lightning-input-field id="quant2" field-name="Quantity_per_hectare__c"
+                                variant="label-stacked" value={secondProdQuantity} onchange={secondProdQuantityChanged}
+                                disabled={isNotDraft}></lightning-input-field>
+                        </div>
+
+                        <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_2-of-12"
+                            field-name="Unit_of_measure__c" variant="label-stacked" value={secondUnitOfMeasure}
+                            onchange={secondUnitOfMeasureChanged} disabled={isNotDraft} required>
+                        </lightning-input-field>
+
+                        <!-- Left side - summery  -->
+                        <div
+                            class="verticalLineRight slds-p-top_small slds-col slds-size_1-of-2 slds-large-size_4-of-12">
+                            {secondPriceDiscount}
+                            </br>
+                            <del>{secondPrice}</del>
+                        </div>
+                    </div>
+
+                    <!-- Hidden fields -->
+                    <div class="slds-hide">
+                        <lightning-button class="slds-m-top_small fert2Submit" type="submit" label="submit">
+                        </lightning-button>
+                    </div>
+                  
+                </lightning-record-edit-form>
+
+            </div>
+
+            <!-- Left side - summery  -->
+            <div class="verticalLineRight slds-p-top_small slds-col slds-size_1-of-1 slds-large-size_1-of-4">
+                מחיר לשורה: {caculateTotalFertJobPrice}
+            </div>
+        </div>
+
+        <template if:true={isAddingNote}>
+            <lightning-textarea id="description" class="textarea" name="description" label="הערה למוצר"
+                placeholder="הקלד כאן.." disabled={isNotDraft}></lightning-textarea>
+        </template>
+
+        <div class="spaceBetween">
+            <lightning-button label={toggleNoteBtnText} variant="base" title={toggleNoteBtnText}
+                class="slds-p-top_x-small" onclick={toggleNote}></lightning-button>
+
+            <lightning-button-icon onclick={removeProduct} icon-name="utility:delete" variant="container"
+                alternative-text="Delete" size="large" class="slds-m-left_xx-small" title="Delete"
+                disabled={isNotDraft}></lightning-button-icon>
+        </div>
+    </div>
+        <!-- Add Discharge Location modal start -->
+        <template if:true={openDischargeLocationAdder}>
+            <section role="dialog" tabindex="-1" aria-labelledby="dischargeLocationAdder" aria-modal="true"
+                class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Add Discharge Location modal header start -->
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={closeDischargeLocationModalAdder}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                                size="small"></lightning-icon>
+                        </button>
+                        <h2 id="dischargeLocationAdder" class="slds-text-heading_medium slds-hyphenate">
+                            {dischargeLocationModalTitle}
+                        </h2>
+                    </header>
+                    <!-- Add Discharge Location modal body start -->
+                    <div class="slds-modal__content slds-p-around_medium" id="dischargeLocationAdder2">
+                        <dl class="slds-list_vertical-space slds-wrap">
+                            <lightning-card>
+                                <div>
+                                    <lightning-record-edit-form onsubmit={closeDischargeLocationModalAdder}
+                                        onsuccess={handleTankPointsEditFormSucces} object-api-name="Tank__c"
+                                        record-id={dischargeLocationId}>
+                                        <lightning-messages></lightning-messages>
+                                        <lightning-input-field required field-name="Name">
+                                        </lightning-input-field>
+                                        <template if:false={dischargeLocationId}>
+                                            <lightning-input-field required 
+                                            field-name="Settlement__c">
+                                            <!-- value={accSettelment} -->
+                                        </lightning-input-field>
+                                        </template>
+                                        <template if:true={dischargeLocationId}>
+                                            <lightning-input-field required field-name="Settlement__c">
+                                            </lightning-input-field>
+                                        </template>
+                                        <lightning-input-field field-name="Driver_Note__c">
+                                        </lightning-input-field>
+                                        <lightning-input-field field-name="TaxiDelivery__c">
+                                        </lightning-input-field>
+                                        <lightning-input-field field-name="RelatedContact__c">
+                                        </lightning-input-field>
+                                        <lightning-input-field class="hidden" field-name="Account__c" value={accountId}>
+                                        </lightning-input-field>
+                                        <div class="slds-m-top_medium footerButtons">
+                                            <lightning-button class="slds-m-around_x-small" type="button" label="ביטול"
+                                                onclick={closeDischargeLocationModalAdder}>
+                                            </lightning-button>
+                                            <lightning-button class="slds-m-around_x-small" type="submit" label="שמירה"
+                                                variant="brand">
+                                            </lightning-button>
+                                        </div>
+                                    </lightning-record-edit-form>
+                                </div>
+                            </lightning-card>
+                        </dl>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <!-- Add Discharge Location modal end -->
+
+
+        <!-- Add Plots modal start -->
+        <template if:true={openPlotModalAdder}>
+            <section role="dialog" tabindex="-1" aria-labelledby="dischargeLocationAdder" aria-modal="true"
+                class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Add Plots modal header start -->
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={closePlotModalAdder}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                                size="small"></lightning-icon>
+                        </button>
+                        <h2 id="plotAdder" class="slds-text-heading_medium slds-hyphenate">
+                            יצירת חלקה חדשה
+                        </h2>
+                    </header>
+                    <!-- Add Plots modal body start -->
+                    <div class="slds-modal__content slds-p-around_medium" id="plotAdder2">
+                        <dl class="slds-list_vertical-space slds-wrap">
+                            <lightning-card>
+                                <div>
+                                    <lightning-record-edit-form onsubmit={submitPlotsHandler} class="plotsForm"
+                                        onsuccess={handlePlotAdderFormSucces} object-api-name="Plot__c">
+                                        <lightning-messages></lightning-messages>
+                                        <c-order-generic-lookup object-name="Branch_growth__c" icon-name="custom:custom5" extrawhereclause={tankPointsExtraWhereClause}
+                                        selected-record-id={branchGrowthId} fields-to-query="Id, Name, Account__c, AccountName__c" 
+                                        onrecordselection={branchGrowthHandler} get-all-on-focus="true" searchlabel="ענף" 
+                                        search-placeholder="חיפוש ענף" message="לא נמצא ענף"></c-order-generic-lookup>
+                                        
+                                        <lightning-input-field field-name="Name" required>
+                                        </lightning-input-field>
+                                        <lightning-input-field field-name="Plot_Size__c" required>
+                                        </lightning-input-field>
+                                        <lightning-input-field field-name="Soil_Type__c">
+                                        </lightning-input-field>
+                                        <lightning-input-field field-name="Area_characterization__c">
+                                        </lightning-input-field>
+                                        <lightning-input-field field-name="Notes__c">
+                                        </lightning-input-field>
+                                        <c-ux-quick-lookup label="חפש ראש-דישון" object-api-name="Plot_Tank_Junction__c"
+                                            icon-name="standard:product" onlookupselectdevent={handleBranchFertilizerHeadSelection}
+                                            extra-where-clause={fertilizerHeadWhereClause} class="product-lookup"></c-ux-quick-lookup>
+                                        <lightning-input-field field-name="Soil_composition__c">
+                                        </lightning-input-field>
+                                        <lightning-input-field field-name="Foliage_spray__c">
+                                        </lightning-input-field>
+                                        <lightning-input-field field-name="Status_From_Source__c">
+                                        </lightning-input-field>
+                                        <lightning-input-field field-name="GROWTH__c">
+                                        </lightning-input-field>
+                                        <!-- Hiden field for using LWC custom lookupField instead of lightning-input-field -->
+                                        <lightning-layout-item class="slds-hide">
+                                            <lightning-input-field field-name="Account__c" value={accountId}>
+                                            </lightning-input-field>
+                                            <lightning-input-field field-name="AccountID__c" value={accountId}>
+                                            </lightning-input-field>
+                                             <lightning-input-field field-name="Branch_growth__c" value={branchGrowthId}>
+                                             </lightning-input-field>
+                                             <lightning-input-field field-name="Fertilizer_head__c" disabled={disableFertilizerField}
+                                                 value={fertilizerHeadId}>
+                                             </lightning-input-field>
+                                         </lightning-layout-item>
+                                        <div class="slds-m-top_medium footerButtons">
+                                            <lightning-button class="slds-m-around_x-small" type="button" label="ביטול"
+                                                onclick={closePlotModalAdder}>
+                                            </lightning-button>
+                                            <lightning-button class="slds-m-around_x-small" type="submit" label="שמירה"
+                                                variant="brand">
+                                            </lightning-button>
+                                        </div>
+                                    </lightning-record-edit-form>
+                                </div>
+                            </lightning-card>
+                        </dl>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <!-- Add Plots modal end -->
+</template>

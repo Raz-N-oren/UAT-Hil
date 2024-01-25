@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+
+
+
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata" fqn="uxQuickLookupResult">
+    <apiVersion>45.0</apiVersion>
+    <isExposed>false</isExposed>
+    <masterLabel>uxQuickLookupResult</masterLabel>
+    <description>uxQuickLookupResult</description>
+</LightningComponentBundle>

@@ -1,0 +1,38 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 03-26-2022
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<apex:page sidebar="false" showHeader="false" lightningStylesheets="true">
+  <style type="text/css">
+    body { background-color: whitesmoke;}
+</style>
+    <apex:includeLightning />
+    <div id="lwcDemo" />
+    <script>
+      var emailGuest = "{!$CurrentPage.parameters.email}";
+      var relatedName = "{!$CurrentPage.parameters.name}";
+    var recordId="{!$CurrentPage.parameters.recordId}";
+    var verify="{!$CurrentPage.parameters.verify}";
+
+    console.log("Page Info:"+recordId+'-'+relatedName+'-'+emailGuest);
+
+    $Lightning.use("c:doubleOptInApp", function() {
+        $Lightning.createComponent("c:SiteDoubleOptIn", {
+            //pass parameter values to lwc js controller
+            relatedemail : emailGuest ,
+            name:relatedName,
+            verifyEmail:verify,
+            recId:recordId
+        },
+        "lwcDemo",
+            function(component) {
+             console.log("Lightning Web Component created Successfully!!");
+              // extend the functionality as per your requirement
+            }
+       );
+    });
+    </script>
+</apex:page>

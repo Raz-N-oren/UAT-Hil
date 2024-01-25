@@ -1,0 +1,8 @@
+<aura:component implements="flexipage:availableForAllPageTypes,lightning:isUrlAddressable" access="global">
+    
+    <aura:attribute type="String" name="recordTypeId"/>   
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <div class="slds-card">
+        <c:priceOfferWrapper recordTypeId="{!v.recordTypeId}"/>
+    </div>
+</aura:component>

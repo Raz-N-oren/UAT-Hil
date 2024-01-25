@@ -1,0 +1,35 @@
+<template>
+        <lightning-card title="פרטי אשראי">
+            <template if:false={credit}>
+                <div class="exampleHolder">
+                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                </div>
+            </template>
+            <template if:true={credit}>
+                <div>
+                    <table>
+                        <tr>
+                            <th>מכסת אשראי</th>
+                            <th>ערך חשבוניות</th>
+                            <th>ח.פ (VAT)</th>
+                            <th>תנאי תשלום</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                {credit.creditQuota}
+                            </td>
+                            <td>
+                                {credit.invoiceValue}
+                            </td>
+                            <td>
+                                {credit.vatNum}
+                            </td>
+                            <td>
+                                {credit.termsOfPayment}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </template>
+        </lightning-card>
+</template>

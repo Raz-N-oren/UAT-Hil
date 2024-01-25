@@ -1,0 +1,176 @@
+<template>
+  <lightning-record-edit-form
+    object-api-name="Opportunity"
+    record-id={recordId}
+    onsubmit={submitForm}
+    onsuccess={handleSuccess}
+    onerror={handleError}
+    dir="rtl">
+    <lightning-messages></lightning-messages>
+    <div class="slds-grid slds-gutters slds-wrap slds-p-around_medium">
+      <div class="slds-col verticalLineLeft slds-size_1-of-1 slds-large-size_4-of-12 slds-m-top_small pedSides">
+      <!--תחום-->
+      <div class="slds-size_1-of-1 slds-large-size_7-of-12">       
+        <lightning-input-field class={scopeClass}
+          field-name="Scope__c"
+          variant="label-stacked"
+          value={rec.scope}
+          onchange={changeScope}
+          disabled={isNotDraft}
+          required></lightning-input-field>
+        </div>
+          <!--לקוח-->
+          <div class="slds-size_1-of-1 slds-large-size_7-of-12 ">       
+            <c-order-generic-lookup 
+          searchlabel={label}
+          last-viewed-fields={lookupFields}
+          extrawhereclause={getExtraWhereClause}
+          fields-to-query={lookupFields}
+          onrecordselection={accSelected}
+          selected-value={rec.account.name}
+          selected-record-id={rec.account.id}
+          get-last-viewed="true"
+          read-only={isNotDraft}></c-order-generic-lookup>
+      </div>
+          <!--גודל לקוח - תחום דשנים-->
+        <div class="slds-grid slds-wrap" if:true={showMatrixData}>
+          <div class="slds-col slds-grid slds-form-element__label">
+            <p>גודל לקוח</p>
+            <p class="slds-border_bottom slds-m-left_medium slds-m-right_medium">
+              <lightning-formatted-text value={customerSize}></lightning-formatted-text>
+            </p>
+          </div>
+        </div> 
+          <!-- סוג עסקה-->
+          <div class="slds-size_1-of-1 slds-large-size_7-of-12" style="margin-top: 0.5rem;">       
+            <lightning-combobox
+        name="Type"
+          label="סוג עסקה"
+          value={rec.type}
+          placeholder="בחר סוג עסקה"
+          options={typeOptions}
+          onchange={changeType}
+          required></lightning-combobox>
+        </div>
+          <!--מתאריך לתאריך-->
+        <div class="slds-grid slds-wrap slds-gutters slds-m-top_x-small">
+            <lightning-input-field
+              class="slds-col slds-size_1-of-2 slds-large-size_5-of-12"
+              field-name="Valid_from__c"
+              variant="label-stacked"
+              value={rec.validFrom}
+              onchange={changeValidFrom}
+              disabled={isNotDraft}
+              required
+            >
+            </lightning-input-field>
+            <lightning-input-field
+              class="slds-col slds-size_1-of-2 slds-large-size_5-of-12"
+              field-name="Valid_To__c"
+              variant="label-stacked"
+              value={rec.validTo}
+              onchange={changeValidTo}
+              disabled={isNotDraft}
+            ></lightning-input-field>
+        </div>
+        <!-- Hidden fields -->
+        <lightning-button
+          id="btnHezi"
+          class="slds-hide oppSubmit"
+          type="submit"
+          label="submit"
+        >
+        </lightning-button>
+      </div>
+      <div class="slds-col verticalLineLeft slds-size_1-of-1 slds-large-size_4-of-12 pedSides">
+        <!--אם עסקת דישון - קבלן מבצע ומחסן משלם-->
+        <div class="slds-col slds-size_1-of-1 slds-large-size_12-of-12 pedSides">
+
+        <div if:true={isFerJob}>
+          <lightning-input-field field-name="Contractor__c" variant="label-stacked" value={rec.contractor} onchange={changeContractor} disabled={isNotDraft} required></lightning-input-field>
+         <div class="slds-size_1-of-1 slds-large-size_7-of-12 slds-m-top_small">       
+          <c-order-generic-lookup
+            data-id="contractor"
+            required={requiredContractor}
+            selected-value={rec.contractor.name}
+            selected-record-id={rec.contractor.id}
+            fields-to-query="Id, Name"
+            get-all-on-focus="true"
+            onrecordselection={changeContractorHandler}
+            searchlabel="קבלן מבצע"
+            message-for-last-view="מחסנים מהזמנות קודמות.."
+            search-placeholder="חיפוש קבלן מבצע"
+            extrawhereclause={contractorExtraWhereClause}
+            message={contractorMessage}></c-order-generic-lookup>
+            </div>
+
+         <div class="slds-size_1-of-1 slds-large-size_7-of-12 slds-m-bottom_small">     
+          <c-order-generic-lookup
+            data-id="warehouse"
+            required={requiredWarehouse}
+            selected-value={rec.warehouse.name}
+            selected-record-id={rec.warehouse.id}
+            read-only={readOnlyIntermediaryWarehouse}
+            get-all-on-focus="true"
+            fields-to-query="Id, Name, ParentId, Parent.Name, LastViewedDate"
+            onrecordselection={changeWarehouseHandler}
+            searchlabel="מחסן מתווך"
+            message-for-last-view="מחסנים מהזמנות קודמות.."
+            search-placeholder="חיפוש מחסן מתווך"
+            extrawhereclause={warehouseExtraWhereClause}
+            message={warehouseMessage}>
+          </c-order-generic-lookup>
+        </div>
+       </div>
+        </div>
+        <!-- ו אם כימיקלים -סוג התראה ימים מסיום-ואחוז-->
+        <div class="slds-grid slds-gutters slds-wrap">
+          <div class="slds-col slds-size_1-of-1 slds-large-size_12-of-12 pedSides slds-m-top_small">
+           <div if:true={scopeFerOrChemicals}>   
+          <div class="slds-col slds-grid slds-wrap">   
+            <div id="both_daysB4_AND_percentages">         
+              <div class="slds-size_1-of-1 slds-large-size_12-of-12">       
+                <lightning-input-field id="alert" field-name="TypeOfAlert__c" variant="label-stacked"
+                 value={rec.TypeOfAlert__c} onchange={alertSelected}>
+                </lightning-input-field>
+               </div>
+               <template if:true={isDays}>
+               <div class="slds-size_1-of-1 slds-large-size_12-of-12">       
+                  <lightning-input-field id="daysB4End" field-name="DaysBeforeEnd2__c" variant="label-stacked" value={rec.DaysBeforeEnd2__c} 
+                  onchange={daysB4EndSelected}></lightning-input-field>
+                </div></template>
+                <template if:true={isPercantage}>
+                <div class="slds-size_1-of-1 slds-large-size_12-of-12">       
+                   <lightning-input-field id="percentage" field-name="PercentageOfFulfillment__c" variant="label-stacked" 
+                   value={rec.PercentageOfFulfillment__c} onchange={percentageSelected} ></lightning-input-field>
+                 </div></template>
+                 </div> 
+               </div> 
+              </div> 
+
+              <div style="width: 300px;padding-right:15px;">
+                 <label class="slds-form-element__label" for="description">הערה כללית</label>
+                   <lightning-input-field id="description" field-name="Description" variant="label-hidden" value={rec.description} onchange={changeDescription} disabled={isNotDraft}></lightning-input-field>
+               </div>   
+
+        
+         </div>
+        </div>
+      </div>
+
+      <div class="slds-grid slds-gutters slds-wrap slds-p-around_medium">
+           <div class="verticalLineRight slds-size_1-of-1 slds-large-size_12-of-12" if:true={isFerJob}>
+              <div class="slds-m-around_medium"><b>סה"כ עלות לדונם: {totalPricePerHectar}</b></div>
+              <div class="slds-m-around_medium"><b>סה"כ עלות עסקה: {totalPrice}</b></div>
+              <div class="slds-m-around_medium" if:true={orderData.executionDate}><b>תאריך ביצוע: {orderData.executionDate}</b></div>
+              <div class="slds-m-around_medium" if:true={orderData.trailerDays}><b>ימי עגלה: {orderData.trailerDays} ימים</b></div>
+              <div class="slds-m-around_medium" if:true={orderData.crane}><b>מנוף: ✓</b></div>
+              <div class="slds-m-around_medium" if:true={orderData.plotsSize}><b>כמות דונם בפועל: {orderData.plotsSize} דונם</b></div>
+              <div class="slds-m-around_medium" if:true={orderData.contractorPricePerAcre}><b>סה"כ תשלום לקבלן לדונם בפועל: ₪{orderData.contractorPricePerAcre}</b></div>
+           </div>
+      
+      </div> 
+
+    </div>
+  </lightning-record-edit-form>
+</template>

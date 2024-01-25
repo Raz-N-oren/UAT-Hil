@@ -1,0 +1,57 @@
+<template>
+    <lightning-record-edit-form
+        record-id={recordId}
+        object-api-name="Opportunity"
+        record-type-id={recordTypeId}
+        onsubmit={submitForm}
+        oncancel={handleReset}
+        onsuccess={handleSuccess}
+        dir={dirByLanguage}>
+        <lightning-card title="">
+            <lightning-messages></lightning-messages>
+            <!-- <b class="slds-p-around_medium"> {label.Opportunity_Details}</b> -->
+            <div class="slds-grid slds-gutters slds-wrap slds-p-around_medium">
+                <div class="slds-p-around_medium slds-size_1-of-2">
+                    <lightning-input-field field-name="Name" ></lightning-input-field>
+                    <lightning-input-field field-name="AccountId" required ></lightning-input-field>
+                    <lightning-input-field field-name="Type" ></lightning-input-field>
+                    <lightning-input-field field-name="Loss_Reason__c" ></lightning-input-field>
+                </div>
+                <div class="slds-p-around_medium slds-size_1-of-2">
+                    <lightning-input-field field-name="OwnerId"></lightning-input-field>
+                    <lightning-input-field field-name="CloseDate"></lightning-input-field>           
+                    <lightning-input-field field-name="StageName"></lightning-input-field>
+                    <lightning-input-field field-name="Probability" ></lightning-input-field>
+                    <lightning-input-field field-name="Amount" ></lightning-input-field>
+                </div>
+            </div>
+
+            <!-- <b class="slds-p-around_medium">{label.Additional_Details} </b> -->
+            <div class="slds-grid slds-gutters slds-wrap slds-p-around_medium">
+                <div class="slds-p-around_medium slds-size_1-of-2">
+                    <lightning-input-field field-name="NextStep" ></lightning-input-field>
+                    <lightning-input-field field-name="Visit_Report__c" ></lightning-input-field>
+                </div>
+
+                <div class="slds-p-around_medium slds-size_1-of-2">
+                    <lightning-input-field field-name="Description" ></lightning-input-field>
+                </div>
+            </div>
+
+            <div class="slds-m-top_medium slds-align_absolute-center">
+                <lightning-button
+                    class="slds-m-top_small slds-p-around_medium"
+                    label={cancelbtn}
+                    onclick={handleCancel}
+                ></lightning-button>
+                <lightning-button
+                    class="slds-m-top_small slds-p-around_medium"
+                    variant="brand"
+                    type="submit"
+                    label={savebtn}
+                ></lightning-button>
+            </div>
+        </lightning-card>
+
+    </lightning-record-edit-form>
+</template>

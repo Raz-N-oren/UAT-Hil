@@ -1,0 +1,16 @@
+<template>
+    <lightning-button variant="brand-outline" label="הוסף מוצר" title="Add product" onclick={addQli}
+        icon-name="utility:add" icon-position="right" class="slds-m-left_x-small" disabled={isNotDraft}>
+    </lightning-button>
+
+    <template for:each={oppLineItemIds} for:item="rec" dir="rtl">
+        <c-price-offer-body-product class="oliRec" if:false={isFertJob} key={rec.key} rec-key={rec.key} onremoveoli={removeOli} default-currency-iso-code={defaultCurrencyIsoCode}
+            onapproveolivalidation={approveOliValidation} onolicreated={oliCreated} oli-id={rec.id} oli-record={rec} onoliduplication={duplicateOli}
+            opp-id={recordId} opp-record={oppRecord} dir="rtl" account-id={accountId} onbasepricevalidation={getBasePriceValidation}></c-price-offer-body-product>
+
+        <c-fert-job-body-product class="oliRec" if:true={isFertJob} key={rec.key} onremoveoli={removeOli} onfertjob1infoupdate={fertJob1InfoUpdate} onfertjob2infoupdate={fertJob2InfoUpdate}
+            onolicreated={oliCreated} onapproveolivalidation={approveOliValidation} onupdateorderdata={updateOrderData}
+            onfertjobpriceupdate={fertJobPriceUpdate} oli-id={rec.id} oli-record={rec} opp-id={recordId} default-currency-iso-code={defaultCurrencyIsoCode}
+            opp-record={oppRecord} account-id={accountId} dir="rtl" onbasepricevalidation={getBasePriceValidation}></c-fert-job-body-product>
+    </template>
+</template>

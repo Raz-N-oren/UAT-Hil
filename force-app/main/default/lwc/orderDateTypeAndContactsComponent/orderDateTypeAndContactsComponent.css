@@ -1,0 +1,82 @@
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.start{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.scrollable-table{
+overflow-y: auto;
+width: 90%;
+max-height: 100px
+}
+
+.tableHeightLarger {
+max-height: 204px
+}
+
+table{
+    border: 1px solid rgb(216, 216, 216);
+    padding: 5px;
+}
+
+td{
+    border-bottom: rgb(216, 216, 216) 1px solid;
+}
+
+tr:hover{
+    background-color: #dddddd;
+}
+.editIcon{
+    padding: 5px 5px 3px 5px;
+    float: left;
+    --sds-c-icon-color-foreground-default:white;
+}
+tr:hover > td > .editIcon  {
+    --sds-c-icon-color-foreground-default: #706e6b;
+}
+tr:hover > td > .editIcon:hover{
+    cursor: pointer;
+    --sds-c-icon-color-foreground-default: rgb(71, 135, 192);
+
+}
+tr:first-child:hover, tr:last-child:hover{
+background-color: white;
+}
+    tr:first-child ,tr:last-child{
+        position: relative;
+        background-color: white;
+        }
+
+th,td{
+    text-align: right;
+    padding: 5px;
+    margin: 2px;
+}
+
+.footerButtons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.white-bgc{
+    padding: 0px;
+    background-color: white !important;
+    width: 90%;
+}
+.hidden{
+    display: none;
+}
+.checkbox{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* .max-width-input {
+    width: 100%; 
+} */

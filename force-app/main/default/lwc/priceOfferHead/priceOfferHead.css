@@ -1,0 +1,26 @@
+.verticalLineLeft {
+    border-left: 1px solid #a39e9e48;
+}
+
+.verticalLineRight {
+    border-right: 1px solid #a39e9e48;
+}
+
+.pedSides {
+    padding: 0rem 1rem 0rem 1rem;
+}
+.pedLeft {
+    padding: 0rem 0rem 0rem 1rem;
+}
+
+.noPed {
+    padding: 0rem;
+}
+.addPadding1remLeftRight{
+    padding-left:1rem;
+    padding-right:1rem;
+}
+.disabled{
+    pointer-events: none;
+    opacity: 0.8;
+}

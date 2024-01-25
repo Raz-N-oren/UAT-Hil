@@ -1,0 +1,88 @@
+/* body::after {
+  display: block;
+  content: '';
+  height: 35px;
+} */
+
+.hidden-input {
+  display: none;
+}
+
+.slds-size_1-of-2, .slds-size_1-of-3 {
+    padding: 1.0rem;
+}
+
+.slds-m-top_small {
+    padding: 0.3rem;
+}
+
+.slds-form-element__label {
+ /* display: flex; */
+ white-space: nowrap;
+ /* justify-content: center;
+ align-items: end; */
+}
+
+.input-check{
+text-align: center !important;
+/* direction: ltr; */
+}
+
+
+
+/* :host {
+    direction: rtl;
+    text-align: right;
+}  */
+/* #LightningAppDivId {
+    direction: rtl !important;
+    text-align: right !important;
+    float: none !important;
+  }  */
+  
+  /* .custom-input-field .slds-form-element__label {
+    float: right !important;
+    width: auto;
+    margin-left: 1rem;
+  } */
+
+  /* .custom-input-field .slds-form-element__label {
+    text-align: right;
+  } */
+
+  /* .custom-input-field .slds-form-element__label {
+    display: inline-block;
+    text-align: right;
+    width: 30%;
+    margin-right: 5px;
+  }
+  
+  .custom-input-field .slds-form-element__control {
+    display: inline-block;
+    width: 70%;
+  } */
+
+
+  /* .custom-label {
+    order: 2;
+    margin-right: 1rem;
+}
+
+.custom-value {
+    order: 1;
+}
+   */
+
+
+
+
+
+/* .custom-label {
+  order: 2;
+  margin-right: 10px;
+  text-align: right;
+}
+
+.custom-value {
+  order: 1;
+} */

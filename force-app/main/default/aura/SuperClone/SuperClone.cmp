@@ -1,0 +1,8 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId"
+                controller="SuperClone">
+    <aura:attribute name="errorMsg" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <ui:message aura:id="errorMsg" severity="error" class="slds-hide">
+        {!v.errorMsg}
+    </ui:message>
+</aura:component>

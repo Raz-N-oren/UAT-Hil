@@ -1,0 +1,112 @@
+<template>
+ 
+
+    <!-- lightning button for open custom modal window -->
+    <lightning-button
+    label="צור חלקה חדשה"
+    title="Create new plot"
+    onclick={customShowModalPopup}
+    class="slds-button slds-align_right">
+    </lightning-button>
+     
+    <!-- modal start -->        
+    <template if:true={customFormModal}>
+     
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+    <div class="slds-modal__container">
+        <!-- modal header start -->
+        <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={customHideModalPopup}>
+                <lightning-icon icon-name="utility:close"
+                alternative-text="close"
+                variant="inverse"
+                size="small" ></lightning-icon>
+                <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 class="slds-text-heading_medium slds-hyphenate">יצירת חלקה חדשה</h2>
+        </header>
+        <!-- modal body start -->
+        <div class="slds-modal__content slds-p-around_medium">
+
+
+                <lightning-record-edit-form
+                object-api-name="Plot__c"
+                onsuccess={handleSuccess}
+                onsubmit={handleSubmit}
+                >
+                    <lightning-messages>
+                    </lightning-messages>
+
+
+                    <c-ux-quick-lookup
+                    label="חפש ענף"
+                    object-api-name="Branch_growth__c"
+                    fields="Account__c"
+                    icon-name="standard:product"
+                    onlookupselectdevent={handleBranchGrowthSelection}
+                    extra-where-clause={branchGrowthWhereClause}
+                    class="product-lookup"
+                    is-input-required
+                  ></c-ux-quick-lookup>
+
+
+                <lightning-input-field field-name="Name" required>
+                </lightning-input-field>
+                <lightning-input-field field-name="Plot_Size__c" required>
+                </lightning-input-field>
+                <lightning-input-field field-name="Soil_Type__c">
+                </lightning-input-field>
+                <lightning-input-field field-name="Area_characterization__c">
+                </lightning-input-field>
+                <lightning-input-field field-name="Notes__c">
+                </lightning-input-field>
+                <c-ux-quick-lookup
+                label="חפש ראש-דישון"
+                object-api-name="Plot_Tank_Junction__c"
+                icon-name="standard:product"
+                onlookupselectdevent={handleBranchFertilizerHeadSelection}
+                extra-where-clause={fertilizerHeadWhereClause}
+                class="product-lookup"
+              ></c-ux-quick-lookup>
+                <lightning-input-field field-name="Soil_composition__c">
+                </lightning-input-field>
+                <lightning-input-field field-name="Foliage_spray__c">
+                </lightning-input-field>
+                <lightning-input-field field-name="Status_From_Source__c">
+                </lightning-input-field>
+                <lightning-input-field field-name="GROWTH__c">
+                </lightning-input-field>
+                
+
+                <!-- Hiden field for using LWC custom lookupField instead of lightning-input-field -->
+                <lightning-layout-item class="slds-hide">
+                    <lightning-input-field field-name="Branch_growth__c" value={branchGrowthId}>
+                    </lightning-input-field>
+                    <lightning-input-field
+                    field-name="Fertilizer_head__c"
+                    disabled={disableFertilizerField}
+                    value={fertilizerHeadId}>
+                    </lightning-input-field>
+                </lightning-layout-item>
+                
+                    <lightning-button
+                        class="slds-m-top_small"
+                        type="submit"
+                        label="יצירת חלקה חדשה">
+                    </lightning-button>
+            </lightning-record-edit-form>
+
+        </div>
+         <!-- modal footer start-->
+        <footer class="slds-modal__footer">
+        </footer>
+    </div>
+    </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open">
+    </div>
+    </template>
+    <!-- modal end --> 
+     
+     
+    </template>

@@ -1,0 +1,157 @@
+<apex:component controller="YearlyPlanEmailByPlotsController" access="global">
+
+	<!-- Assigns oppId value to the components controller varible 'oppIdFromVFEmailTemplate' at file 'OppLineEmailPlotsComponent.component' -->
+	<apex:attribute name="oppId" type="String" assignTo="{!oppIdFromVFEmailTemplate}" description="Oppertunity ID from VF Email Template"
+	 access="global" />
+
+
+	<html>
+
+	<head>
+
+		<apex:outputText escape="false" value="<style> .quantitytable td{border:0.5px solid #6c6f7533}.quantitytable th{border:1px solid #000000;font-size:xx-small;text-align:center}</style>"
+		/>
+
+
+	</head>
+
+	<body style="font-family : 'Segoe UI', Arial, sans-serif; font-size:x-small;">
+
+
+		<apex:outputPanel rendered="{!(FatalExceptionMessage != null)}">
+			{!FatalExceptionMessage}
+				</apex:outputPanel>
+				<apex:outputPanel rendered="{!AND(AmountOfOppLineItems == 0, FatalExceptionMessage == null)}">
+					תכנית שנתית ריקה
+				</apex:outputPanel>
+		<apex:outputPanel rendered="{!AND(AmountOfOppLineItems > 0, AmountOfOppLineItems != null, FatalExceptionMessage == null)}">
+			<apex:repeat value="{!PlotsMap}" var="keyPlotName">
+				<br>
+				<b>שם חלקה: {!keyPlotName} </b></br>
+				<b>גודל חלקה: {!SumOfPlotsSizeMap[keyPlotName].Size}</b>
+
+
+				<table style="text-align: center; border: 1px solid black;  border-collapse: collapse; cellpadding: 2px; font-family : 'Segoe UI', Arial, sans-serif; font-size:xx-small; background-color: #b2ebf2;  width: 100%;">
+
+
+					<apex:repeat value="{!ColumnTitle}" var="columnTitle">
+						<!-- Plots table(s) Titles-->
+						<td style="background-color: #81b9bf;">
+							<b>{!columnTitle}</b>
+						</td>
+
+
+					</apex:repeat>
+					<!-- Plots table(s) Data-->
+					<apex:repeat value="{!PlotsMap[keyPlotName]}" var="valuePlotDetails">
+						<tr>
+							<td>
+								<b>{!month(valuePlotDetails.Date__c)}/{!year(valuePlotDetails.Date__c)}</b>
+							</td>
+							<td style="text-align: right">
+								<b>{!valuePlotDetails.Product2.Name}</b>
+							</td>	
+							<td style="text-align: right">						
+								<b>{!valuePlotDetails.Description}</b>
+							</td>
+							<td>
+								<b>{!valuePlotDetails.Quantity_per_hectare__c}</b>
+							</td>
+							<td>
+								<b>{!valuePlotDetails.Quantity}</b>
+							</td>
+							<td>
+								<b>{!valuePlotDetails.K__c}</b>
+							</td>
+							<td>
+								<b>{!valuePlotDetails.P__c}</b>
+							</td>
+							<td>
+								<b>{!valuePlotDetails.N__c}</b>
+							</td>
+
+						</tr>
+					</apex:repeat>
+
+					<!-- Summary row (last row in each plot table) -->
+					<tr style=" align= center">
+						<td>
+							<b> סיכום יחידות:</b>
+						</td>
+						<td>
+						</td>
+						<td>
+						</td>
+						<td>
+						</td>
+						<td>
+						</td>
+						<td>
+							<b>{!SumOfPlotsSizeMap[keyPlotName].SummedK}</b>
+						</td>
+						<td>
+							<b>{!SumOfPlotsSizeMap[keyPlotName].SummedP} </b>
+						</td>
+						<td>
+							<b>{!SumOfPlotsSizeMap[keyPlotName].SummedN}</b>
+						</td>
+					</tr>
+
+				</table>
+
+			</apex:repeat>
+
+			<br></br>
+	
+
+			<!-- ## Summary bottom table ## -->
+			<!-- Summary bottom table headlines -->
+			<b>סיכום כמויות (קוב)</b>
+			<table class="quantitytable" style="text-align: center; border: 1px solid black;  border-collapse: collapse; cellpadding: 2px; font-family : 'Segoe UI', Arial, sans-serif; font-size:xx-small; background-color: #b2ebf2;  width: 100%;">
+
+				<tr style="background-color: #81b9bf;">
+					<th style="text-align:right">
+						מוצר
+					</th>
+
+					<apex:repeat value="{!Monthes}" var="month">
+						<th>
+
+							{!month}
+
+						</th>
+
+					</apex:repeat>
+					<th>
+						סהכ
+					</th>
+
+				</tr>
+
+				<!-- Summary bottom table data-->
+				<apex:repeat value="{!OppLineGroupeResultsMap}" var="keyProductName">
+					<tr>
+						<td align="right">
+							<b> {!keyProductName}</b>
+						</td>
+
+						<apex:repeat value="{!Monthes}" var="monthKey">
+							<td>
+								<b>{!OppLineGroupeResultsMap[keyProductName][monthKey]}</b>
+							</td>
+						</apex:repeat>
+						<td>
+							<b>{!OppLineGroupeResultsMap[keyProductName]['Sum']}</b>
+						</td>
+					</tr>
+				</apex:repeat>
+
+			</table>
+		</apex:outputPanel>
+
+
+	</body>
+
+	</html>
+
+</apex:component>

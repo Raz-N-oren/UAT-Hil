@@ -1,0 +1,25 @@
+<apex:page sidebar="false" showHeader="false">
+    <apex:includeLightning />
+
+    <!-- Add RTL style attribute here -->
+<div id="LightningAppDivId" style="float:revert !important;"></div>
+
+    <script>
+        var AccountId = "{!$CurrentPage.parameters.AccountId}";
+        var ProductId = "{!$CurrentPage.parameters.ProductId}";
+
+        $Lightning.use("c:CreateDiscountApp", function() {
+            $Lightning.createComponent(
+                "c:discountDetails",
+                {
+                    "AccountId": AccountId,
+                    "ProductId": ProductId
+                },
+                "LightningAppDivId",
+                function(cmp) {
+                    console.log('LWC Component added in VF page');
+                }
+            );
+        });
+    </script>
+</apex:page>

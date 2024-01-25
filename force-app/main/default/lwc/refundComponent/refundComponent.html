@@ -1,0 +1,105 @@
+<template>
+    <!-- record edit - edit an existing record or create new one -->
+    <lightning-record-edit-form object-api-name='Billing_Credit__c' onsubmit={validateForm} onsuccess={handleSuccess} onerror={handleError} record-id={recordId}>
+        <lightning-messages></lightning-messages>
+
+        <lightning-card>
+            <div class="slds-p-around_small">
+                <lightning-accordion allow-multiple-sections-open active-section-name={activeSections}>
+
+                    <lightning-accordion-section name="A" label="נתונים כלליים">
+                        <div class="slds-m-top_small"></div>
+                        <div class="slds-grid slds-gutters slds-wrap">
+                            <div class="slds-size_1-of-1 slds-large-size_1-of-2">
+                                <!--סוג הפעולה-->
+                                <lightning-input-field field-name="Action_Type__c" onchange={handleActionTypeChange}> </lightning-input-field>
+                                <template if:false={tashlumMirosh}>
+                                    <!-- סוג עסקה -->
+                                    <lightning-input-field required field-name="deal_type__c" onchange={dealTypeHandler} value={deal_type}> </lightning-input-field>
+                                     <!-- שנה -->
+                                     <lightning-input-field required field-name="refund_year__c" onchange={refundYearHandler} value={refund_year}> </lightning-input-field>
+                                  </template>
+                                    
+                                     <!--חשבונית -->
+                                      <lightning-input-field field-name="Invoicing__c" disabled> </lightning-input-field>
+                                 <template if:true={tashlumMirosh}>
+                                      <!--תעודת משלוח -->
+                                    <lightning-input-field field-name="Delivery_Note__c" onchange={deliveryNoteHandler} disabled={getDeliveryNoteDisable} required={isFutureOrMoneyRefundAgainstRequired}> </lightning-input-field>
+                                   <!-- תאריך מסמך-->
+                                     <lightning-input-field field-name="Document_Date__c" value={documentDate} onchange={documentDateHandler} disabled={isEditable}> </lightning-input-field>
+                               </template>
+                            </div>
+                            
+                            <div class="slds-size_1-of-1 slds-large-size_1-of-2">
+                                <template if:false={tashlumMirosh}>
+                                   <!-- יחידה עסקית -->
+                                  <lightning-input-field required field-name="business_unit__c" onchange={businessUnitHandler} value={business_unit}> </lightning-input-field>
+                                    <!-- סוג לקוח -->
+                                    <lightning-input-field required field-name="customer_type__c" onchange={customerTypeHandler} value={customer_type} > </lightning-input-field>
+                                     <!-- תאריך התחלה  -->
+                                    <lightning-input-field required field-name="start_date__c" onchange={startDateHandler}> </lightning-input-field>
+                                 </template>
+
+                             <template if:true={tashlumMirosh}>
+                                <!--תאריך ערך -->
+                                <lightning-input-field field-name="Value_Date__c" onchange={valueDateHandler} disabled={isFutureOrMoneyRefundAgainstDeliveryNote} required={isNotAgainstDeliveryNote}></lightning-input-field>
+                                 <!-- תוקף -->
+                                <lightning-input-field field-name="Expiration_Date__c" if:true={isFutureRefund} value={expirationDate} onchange={expirationDateHandler}> </lightning-input-field>
+                                <!-- נקודות העמסה -->
+                                <lightning-input-field field-name="Loading_Point__c" value={loadingPoint} onchange={loadingPointHandler} disabled={isFutureOrMoneyRefundAgainstDeliveryNote}> </lightning-input-field>
+                                <!-- סיבה -->
+                                <lightning-input-field required field-name="Reason__c" onchange={reasoneChangeHanlder} value={reason} disabled={isEditable}> </lightning-input-field>
+                            </template>
+                            </div>
+                            
+                        </div>
+                    </lightning-accordion-section>
+                    
+                    <lightning-accordion-section name="B" label="פרטי לקוח">
+                        <div class="slds-m-top_small"></div>
+                        <div class="slds-grid slds-gutters slds-wrap">
+                            <div class="slds-size_1-of-1 slds-large-size_1-of-2">
+                              <!-- לקוח מקבל-->
+                              <template if:true={isMeshalem}>
+                                <lightning-input-field field-name="Account__c"  onchange={receieCustomerHandler} value={account} disabled={isFutureOrMoneyRefundAgainstDeliveryNote} required={isNotAgainstDeliveryNote}> </lightning-input-field>
+                              <!--מחסן מתווך -->
+                                <lightning-input-field field-name="Wearhouse__c" value={wearhouse} onchange={wearhouseHandler} disabled={isFutureOrMoneyRefundAgainstDeliveryNote} required={isNotAgainstDeliveryNote}></lightning-input-field>
+                            </template>
+                            </div>
+                            <div class="slds-size_1-of-1 slds-large-size_1-of-2">
+                              <!-- לקוח משלם-->
+                                <lightning-input-field field-name="Paying_Customer__c" value={PayingAccount} onchange={PayingAccountHandler} disabled={isFutureOrMoneyRefundAgainstDeliveryNote} required={isNotAgainstDeliveryNote}> </lightning-input-field>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+
+                    <lightning-accordion-section name="C" label="מוצר וכמויות">
+                        <div class="slds-m-top_small"></div>
+                        <div class="slds-grid slds-gutters slds-wrap">
+                            <div class="slds-size_1-of-1 slds-large-size_1-of-2">
+                                <!--מוצר-->
+                                <lightning-input-field field-name="Product__c" value={product} onchange={productHandler} disabled={isFutureOrMoneyRefundAgainstDeliveryNote} required={isNotAgainstDeliveryNote}> </lightning-input-field>
+                                 <!--סוג זיכוי-->
+                                <lightning-input-field field-name="Type__c" required if:false={isRefundAgainstDeliveryNote} onchange={typeOfRefundHandler} disabled={isEditable}> </lightning-input-field>
+                                <lightning-input-field if:true={isQuantityType} required field-name="Quantity__c" value={quantity} onchange={quantityHandler}> </lightning-input-field>
+                            </div>
+                            <div class="slds-size_1-of-1 slds-large-size_1-of-2">
+                                <!--סכום-->
+                                <lightning-input-field field-name="Sum__c" if:true={showSum} value={sum} onchange={sumHandler} required> </lightning-input-field>
+                                <!--יחידת מידה-->
+                                <lightning-input-field if:true={isQuantityType} required field-name="Unit_of_measure__c" value={unitOfMeasure}> </lightning-input-field>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+
+                </lightning-accordion>
+            </div>
+            <div class="slds-border_top slds-grid slds-p-around_small" dir="ltr" if:false={recordId}>
+                <div>
+                    <lightning-button variant="brand" label="שמירה" title="save" type="submit" class="slds-m-left_xx-small"></lightning-button>
+                    <lightning-button variant="Neutral" label="ביטול" title="cancel" onclick={handleReset} class="slds-m-left_xx-small"></lightning-button>
+                </div>
+            </div>
+        </lightning-card>
+    </lightning-record-edit-form>
+</template>

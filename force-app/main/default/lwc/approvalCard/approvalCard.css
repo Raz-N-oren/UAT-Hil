@@ -1,0 +1,154 @@
+.icn{
+    --sds-c-icon-color-foreground-default: white; 
+}
+[lightning-textarea_textarea-host] { 
+  display: inherit;
+  height: 50px;
+
+  /* overflow: auto;
+  overflow-y: scroll; */
+}
+.swipe-container {
+    display: flex;
+    overflow: auto;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    background-color: white;
+    
+    /* max-height: 100px; */
+    min-height: 10px;
+    /* cursor: pointer; */
+  }
+  /* scrollbar should be hidden */
+  .swipe-container::-webkit-scrollbar {
+    display: none;
+  }
+  /* main element should always snap into view */
+  .swipe-element {
+    scroll-snap-align: start;
+    font-family: sans-serif;
+    padding: 16px;
+    background-color: rgb(255, 255, 255);
+  }
+  /* actions and element should be 100% wide */
+  .action,
+  .swipe-element {
+    min-width: 100%;
+  }
+  .action {
+    display: flex;
+    align-items: center;
+  }
+  /* icon should remain sticky */
+  i {
+    color: white;
+    position: sticky;
+    left: 16px;
+    right: 16px;
+  }
+  /* action background colors */
+  .left {
+    background-color: red;
+  }
+  .right {
+    justify-content: flex-end;
+    background-color: rgb(22, 192, 22);
+  }
+  /* :host {
+    --sds-c-textarea-sizing-min-height: 130px;
+} */
+
+.linkDiv{
+  max-width: 70%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.divBgColor{
+  /* background-color: aliceblue; */
+  /* overflow-x:auto; */
+}
+table {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+
+table caption {
+  font-size: 1.5em;
+  margin: .5em 0 .75em;
+}
+
+table tr {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: .35em;
+}
+
+table th,
+table td {
+  padding: .625em;
+  text-align: center;
+}
+
+table th {
+  font-size: .85em;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+@media screen and (max-width: 600px) {
+  table {
+    border: 0;
+  }
+
+  table caption {
+    font-size: 1.3em;
+  }
+  
+  table thead {
+    border: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  
+  table tr {
+    border-bottom: 3px solid #ddd;
+    display: block;
+    margin-bottom: .625em;
+  }
+  
+  table td {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: .8em;
+    text-align: right;
+  }
+  
+  table td::before {
+    /*
+    * aria-label has no advantage, it won't be read inside a table
+    content: attr(aria-label);
+    */
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  table td:last-child {
+    border-bottom: 0;
+  }
+}
+
+.rejectDiv{
+  margin: 8px 0px;
+}

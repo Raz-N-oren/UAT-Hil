@@ -1,0 +1,15 @@
+<template>
+    <!-- html container for new Opportunities  -->
+
+    <template if:true={isFertPlan}>
+        <c-create-fertilize-plan record-type-id={recordTypeId}>
+
+        </c-create-fertilize-plan>
+    </template>
+    <template if:true={isPriceOffer}>
+        <c-price-offer-wrapper record-type-id={recordTypeId}>
+
+        </c-price-offer-wrapper>
+    </template>
+
+</template>

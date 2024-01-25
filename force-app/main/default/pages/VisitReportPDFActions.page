@@ -1,0 +1,35 @@
+<apex:page standardController="Visit_Report__c" showHeader="true"  extensions="VisitReportPDFActionsExtension"  >
+    <script type='text/javascript' src='/canvas/sdk/js/publisher.js'></script>
+    <script> 
+        Sfdc.canvas.publisher.subscribe({name: "publisher.showPanel",
+            onData:function(e) {
+                Sfdc.canvas.publisher.publish({name:"publisher.setValidForSubmit", payload:"true"});
+        }});
+        Sfdc.canvas.publisher.subscribe({ name: "publisher.post",
+            onData: function(e) {
+                debugger; 
+
+
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.VisitReportPDFActionsExtension.savePDF}',id= '{!Visit_Report__c.Id}',name='{!Visit_Report__c.Name}',
+                    function (result, event) {
+                      refreshView();
+                    }
+                );                
+                   
+        }});
+        
+        
+        function refreshView(){
+          Sfdc.canvas.publisher.publish({ name: "publisher.close",
+                    payload:{ refresh:"true" }});
+        }
+
+       
+        
+    </script>
+  
+  <apex:form >                
+      <apex:iframe src="/apex/VisitReportPDF?id={!Visit_Report__c.Id}" scrolling="true" id="theIframe" width="100%"/>    
+  </apex:form>
+  </apex:page>

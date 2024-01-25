@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+       <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            
+            <property name="accountId" label="Account Id" type="String" role="inputOnly"  />
+            <property name="productId" label="Product Id" type="String" role="inputOnly" /> 
+            <property name="discountMatrix" label="discountMatrix" type="String"  /> 
+            <property name="totalCredit" label="total Credit" type="String" /> 
+            <property name="dnId" label="dnId" type="String"   role="inputOnly" />             
+            <property name="totalDNreturn" label="totalDNreturn" type="String" role="outputOnly" />  
+            <property name="totalDNreturnQun" label="totalDNreturnQun" type="String" role="outputOnly" />
+            <property name="discountMatrixId" label="discountMatrixId" type="String" role="outputOnly" />
+            <property name="existingDiscount" label="existingDiscount" type="String" />  
+            <property name="requestedDiscount" label="requestedDiscount" type="String"   role="inputOnly" />
+            <property name="newdiscountamount" label="newdiscountamount" type="String"   />
+            <property name="dnUOM" label="dnUOM"  type="String"  />             
+           
+
+            
+
+                       
+
+    
+
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

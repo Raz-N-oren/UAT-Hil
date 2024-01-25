@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+       <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="accountId" label="Account Id" type="String" role="inputOnly"  />
+            <property name="productId" label="Product Id" type="String" role="inputOnly" /> 
+            <property name="accountDivision" label="Account Division" type="String" role="inputOnly" />
+            <property name="prodPrice" label="prod Price" type="String" /> 
+            <property name="priceBookId" label="priceBookId" type="String"  /> 
+            <property name="totalCredit" label="total Credit" type="String" /> 
+            <property name="dnId" label="dnId" type="String"   role="inputOnly" /> 
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

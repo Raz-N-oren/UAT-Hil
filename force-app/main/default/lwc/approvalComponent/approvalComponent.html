@@ -1,0 +1,47 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <div class={headerClass}>
+        <div class={headerBodyClass}>
+            <!-- <div class="slds-col slds-grid slds-wrap"> -->
+                <!-- <div class="slds-col slds-grid"> -->
+                    <lightning-button class="slds-col slds-p-around_small slds-m-around_small" label="אשר" variant="brand"
+                        icon-name="action:approval" data-type='Approve' onclick={massApprovalHandler} title="אשר">
+                    </lightning-button>
+                    <lightning-button class="slds-col slds-p-around_small slds-m-around_small" label="דחה"
+                        icon-name="action:reject" variant="base" data-type='Reject' onclick={massApprovalHandler}
+                        title="דחה">
+                    </lightning-button>
+                <!-- </div> -->
+                <div class="slds-col slds-grid slds-p-around_small slds-m-top_large">
+                    <label class="slds-m-left_x-small slds-m-right_x-small" for="allCheck">בחר הכל<input
+                        type="checkbox" onclick={handleAllChecked} class="slds-m-left_x-small slds-m-right_x-small"
+                        name="בחר הכל" id='allCheck'></label>
+                </div>
+                <lightning-button class="slds-col slds-p-around_small slds-m-around_small" label="רענן" variant="base"
+                    onclick={getSubmittedRecords} title="רענן" icon-name="utility:refresh">
+                </lightning-button>
+            <!-- </div> -->
+            <!-- <div class="slds-grid slds-wrap slds-col"> -->
+                <lightning-button-icon-stateful if:true={isDesktop} class="slds-col slds-m-top_x-large" icon-name="utility:tile_card_list" selected={splitColumns} onclick={handleSplitColumns} alternative-text="שינוי תצוגה"></lightning-button-icon-stateful>
+                <lightning-combobox class="slds-col slds-m-around_small" placeholder="סינון תהליך" label="סינון תהליך"
+                    options={relatedTo} onchange={relatedToFilterHandler}>
+                </lightning-combobox>
+                <lightning-combobox class="slds-col slds-m-around_small" placeholder="סינון לקוח" label="סינון לקוח"
+                    options={accountNameOptions} onchange={accountNameFilterHandler}>
+                </lightning-combobox>
+                <lightning-combobox class="slds-col slds-m-around_small" placeholder="סינון נוצר על ידי"
+                    label="סינון נוצר על ידי" options={submittedByOptions} onchange={submittedByFilterHandler}>
+                </lightning-combobox>
+                <lightning-combobox class="slds-col slds-m-around_small" placeholder="סינון מוצר"
+                    label="סינון מוצר" options={productNameOptions} onchange={productNameFilterHandler}>
+                </lightning-combobox>
+            <!-- </div> -->
+
+        </div>
+    </div>
+    <div if:false={loading} class={cardsContainerClass}>
+        <c-approval-card class={cardsClass} for:each={allApprovalsToDisplay} for:item="approval" key={approval.recordId} approval={approval} checked={allChecked} split-columns={splitColumns} onsubmitapproval={handleApprove}></c-approval-card>
+    </div>
+    <lightning-spinner if:true={loading} alternative-text="Loading" size="large"></lightning-spinner>
+
+</template>

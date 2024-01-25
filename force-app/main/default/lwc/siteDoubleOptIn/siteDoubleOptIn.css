@@ -1,0 +1,46 @@
+.container{
+    width: 47%;
+    background-color: white;
+    font-size: 14px;
+
+}
+
+body,td{
+    background-color: whitesmoke;
+    display: inline-block;
+    direction: ltr;
+}
+p{
+    padding-left: 1rem;
+    font-family: sans-serif;
+
+}
+.recordBody{
+    width: 95%;
+    font-size: 14px;
+}
+
+.bodyText{
+   color:  #0d3f5bde;
+   font-size: 17px;
+   font-weight: 500;
+   padding-bottom: 4rem;
+}
+.greedingsText{
+    color:  #325162;
+    font-size:14px;
+    padding-bottom: 0.5rem;
+    font-weight: 400;
+
+}
+.regardsText{
+    color:  #325162;
+    font-size:14px;
+}
+
+.unsubscribeBtn{
+    background:#002846;
+    padding-left: 43%;
+     color:white;
+
+}

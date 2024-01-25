@@ -1,0 +1,14 @@
+.THIS .spinnerWrapper{
+    width: 24px;
+    height: 24px;
+}
+
+.THIS .spinnerDiv{
+    margin-right: 12px;
+    margin-left: 12px;
+}
+
+.THIS .cardBody{
+    padding-left: 1%;
+    padding-right: 1%;
+}

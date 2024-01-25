@@ -1,0 +1,43 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 05-01-2022
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <div class="slds-align_absolute-center">
+    <div class="container">
+        <div > 
+            <div>
+                <img  class="image_class" src={image}>
+            </div>
+            
+           <!-- <div >
+                <p  class="greedingsText">Sehr geehrte/r Herr/Frau {name}</p>
+            </div>
+            <template if:true={unsubscribe}>
+            <div>
+                <p class="bodyText">Vielen Dank für Ihr Interesse an unserem Newsletter.</p>
+            </div>
+           
+        </template>
+        <template if:false={unsubscribe}>
+            <div>
+                <p  class="bodyText">Abmeldung erfolgreich.</p>
+                <p class="bodyText">Sie haben sich erfolgreich aus unserem Verteiler ausgetragen und werden zukünftig keine E-Mails mehr von uns erhalten.</p>
+            </div>
+        </template>
+            <div >
+          <p class="regardsText">Lorem ipsum </br> dolor DE</p>
+           
+            </div>-->
+            <template if:true={unsubscribe}>
+                <div class="unsubscribeBtn">
+                <a  style="color:white;" onclick={unsubscribeClick}>abmelden</a>
+            </div>
+        </template>
+        </div>
+    </div>
+</div>
+</template>

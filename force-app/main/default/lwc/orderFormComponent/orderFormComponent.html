@@ -1,0 +1,129 @@
+<template>
+  <div class="container">
+
+  <div class="slds-m-bottom_small">
+    <c-order-account-or-branch-autocomplete
+      selected-record-id={rec.account.id}
+      selected-value={rec.account.name}
+      onrecordselection={handleRecordSelect}
+      disabled={recordId}
+      remove-record-on-lookup={removeRecordOnLookup}
+      onrecordremoved={removeRecordOnLookup}>
+    </c-order-account-or-branch-autocomplete>
+  </div>
+  <div class="lgc-bg">
+    <div dir="rtl" class="slds-grid">
+      <div class="slds-size_1-of-1 slds-large-size_2-of-3 form">
+        <template if:true={rec.account.isSensitive}>
+          <p style="color:red; font-size:10px;">*לקוח רגיש*</p>
+      </template>
+        <template if:false={isAccSelected}>
+          <div>
+            <div>
+              <label for="customer1">לקוח</label>
+       
+          
+              <p id="customer1">טרם נבחר</p>
+            </div>
+            <div>
+              <label for="branch1">ענף</label>
+              <p id="branch1">טרם נבחר</p>
+            </div>
+          </div>
+        </template>
+        <template if:true={isAccSelected}>
+          <div>
+            <div>
+              <label for="customer2">לקוח</label>
+              <p data-id={rec.account.id} id="customer2">{rec.account.name}</p>
+            </div>
+            <template if:true={isOnlyAccount}>
+              <div>
+                <label for="branch2">ענף</label>
+                <p id="branch2">--</p>
+              </div>
+            </template>
+            <template if:false={isOnlyAccount}>
+              <div>
+                <label for="branch3">ענף</label>
+                <p data-id={rec.branchGrowth.id} id="branch3">
+                  {rec.branchGrowth.name}
+                </p>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <!-- שלוש קומפוננטות עבור כל אינפוט: מחסן מתווך, משלם וסוכן מקבל עמלה-->
+        <!-- required - boolean var for validation -->
+        <c-order-generic-lookup
+          data-id="IntermediaryWarehouse"
+          required={requiredIntermediaryWarehouse}
+          selected-value={rec.intermediaryWarehouse.name}
+          selected-record-id={rec.intermediaryWarehouse.id}
+          read-only={readOnlyIntermediaryWarehouse}
+          fields-to-query="Id, Name, ParentId, Parent.Name, LastViewedDate"
+          onrecordselection={intermediaryWarehouseHandler}
+          searchlabel="מחסן מתווך"
+          message-for-last-view="מחסנים מהזמנות קודמות.."
+          search-placeholder="חיפוש מחסן מתווך"
+          extrawhereclause={realtorExtraWhereClause}
+          message={realtorMessage}></c-order-generic-lookup>
+        <c-order-generic-lookup
+          data-id="PayingCustomer"
+          required={requiredPayingCustomer}
+          searchlabel="משלם"
+          onrecordselection={payingCustomerHandler}
+          selected-value={rec.payingCustomer.name}
+          selected-record-id={rec.payingCustomer.id}
+          read-only={readOnlyPayingCustomer}
+          message-for-last-view="משלמים מהזמנות קודמות.."
+          search-placeholder="חיפוש משלם"
+          extrawhereclause={paysExtraWhereClause}
+          message={paysMessage}>
+        </c-order-generic-lookup>
+        <c-order-generic-lookup
+          data-id="AgentReceivesCommission"
+          required={requiredAgentReceivesCommission}
+          searchlabel="סוכן מקבל עמלה"
+          read-only={readOnlyAgentReceivesCommission}
+          onrecordselection={agentReceivesCommissionHandler}
+          message-for-last-view="סוכנים מהזמנות קודמות.."
+          selected-value={rec.agentReceivesCommission.name}
+          selected-record-id={rec.agentReceivesCommission.id}
+          search-placeholder="חיפוש סוכן מקבל עמלה"
+          extrawhereclause={agentExtraWhereClause}
+          message={agentMessage}
+        ></c-order-generic-lookup>
+      </div>
+      <template if:true={isDesktop}>
+        <div class="slds-size_1-of-3 slds-p-right_x-small slds-border_right">
+          <div class="slds-p-left_small">
+            <lightning-input variant="label-stacked" type="text" label="אישור הזמנה" disabled={isAllowedToAprroveOrder} value={rec.payerApproval} onchange={changePayerApproval}></lightning-input>
+          </div>
+          <div class="slds-p-left_small">
+            <lightning-input variant="label-stacked" type="text" label="אישור מעבר" disabled={isNotCustomerService} value={rec.passingPermit} onchange={changePassingPermit}></lightning-input>
+          </div>
+          
+          <div class="slds-p-left_small">
+            <lightning-combobox
+            data-index={index}
+            class="must"
+            label="מעביר ההזמנה"
+            options={orderDeliveredByOptions}
+            onchange={changeorderDeliveredBy}
+            value={rec.orderDeliveredBy}
+            required>
+          </lightning-combobox>
+        </div>
+
+        <div if:true={isUserFcSubAdmin} class="slds-p-left_small">
+          <lightning-input variant="label-stacked" type="text" label="אישור מחסן קוגסיגנציה" value={rec.cosignationWarehouseApproval} onchange={changeCosignationWarehouseApproval}></lightning-input>
+        </div>
+  </div>
+</template>
+    </div>
+  </div>
+</div>
+
+</template>

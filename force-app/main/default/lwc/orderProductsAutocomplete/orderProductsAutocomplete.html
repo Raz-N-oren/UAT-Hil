@@ -1,0 +1,80 @@
+<!-- sldsValidatorIgnore -->
+<!-- sldsValidatorIgnore -->
+<template>
+  <div class="slds-form-element" >
+    <label class="slds-form-element__label" for="filter-id-4"><abbr title="required" class="slds-required">*</abbr> {labelProduct}</label>
+    <div class="slds-form-element slds-combobox-group">
+      <div class="slds-form-element__control slds-combobox_container slds-combobox_addon-start">
+        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" aria-expanded="true" aria-haspopup="listbox" role="combobox">
+        <!--יש שני אינפוטים - אחד לפני בחירת מוצר, השני אחרי בחירת מוצר-->
+        <!--האינפוט שמוצג לאחר בחירת מוצר-->
+          <template if:true={selectedValue}>
+            <div data-key="pilldiv" class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+              <span class="slds-icon_container slds-icon-standard-product slds-combobox__input-entity-icon" title="object">
+                <div class="slds-icon slds-icon_small" aria-hidden="true">
+                  <lightning-icon icon-name="standard:product" size="small"></lightning-icon>
+                </div>
+                <span class="slds-assistive-text">Record</span>
+              </span>
+              <input type="text" disabled={disabled} class="slds-input slds-combobox__input slds-combobox__input-value" id="combobox-id-5" aria-controls="listbox-id-5" role="textbox" placeholder="Select an Option" readonly value={selectedValue}>
+                <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" onclick={removeRecordOnLookup} disabled={disabled} title="Remove selected option">
+                 <span class="slds-button__icon" aria-hidden="true">
+                   <lightning-icon icon-name="utility:close" size="xx-Small" class="slds-icon slds-icon slds-icon_x-small slds-icon-text-default" aria-hidden="true" ></lightning-icon>
+                  </span>
+                  <span class="slds-assistive-text">Remove selected record</span>
+                </button>
+              </div>
+              <p style="color: red; font-size:11px"> {showHidRedText} </p> <!-- מוצר זה לא נבחר בעבר ללקוח זה-->
+              <p style="color: red; font-size:11px"> {hazardMaterial} </p> <!-- חומר מסוכן-->
+              <p style="color: black; font-size:11px"> משקל סגולי  {specificGravity}</p> <!-- שדה משקל סגולי -->
+          </template>
+
+              <!--האינפוט שמוצג לפני בחירת מוצר-->
+          <template if:false={selectedValue}>
+            <div data-key="searchdiv" class={divCssIsInvalid} role="none">  
+              <lightning-input type="text" dir="rtl" value={searchKey} onfocusout={onLeave} onfocus={onFocus} onchange={handleKeyChange} id="combobox-id-2" variant="label-hidden" aria-autocomplete="list" aria-controls="listbox-id-2" role="textbox" placeholder="חפש מוצר" ></lightning-input>
+              <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right" >
+                <lightning-icon icon-name="utility:search" size="xx-Small" class="slds-icon slds-icon slds-icon_x-small slds-icon-text-default" aria-hidden="true" ></lightning-icon>
+              </span>   
+            </div>
+
+            <template if:true={invalid}>
+              <div class="slds-text-color_error slds-text-body_small" id="error-message" > זהו שדה חובה </div>
+            </template>
+            <template if:true={recordsList}>
+              <div id="listbox-id-2-venu" data-key="dropdownresult" class="slds-show slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_left slds-dropdown_fluid" role="listbox">
+                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                  <template if:false={hideMessage}>
+                    <div dir="rtl">{message}</div>
+                  </template>
+                  <lightning-spinner alternative-text="Loading" variant="brand" size="small" if:true={showSpinner} >
+                  </lightning-spinner>
+                  <template for:each={recordsList} for:item="record">
+                    <li id={record.Id} key={record.Id} data-key={record.Id} data-record={record} data-name={record.Name} onclick={onRecordSelection} role="presentation" class="slds-listbox__item" >      
+                      <div data-key={record.Id} data-name={record.Name} class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option" >
+                        <span class="slds-media__body">
+                          <span data-key={record.Id} data-name={record.Name} class="slds-listbox__option-text slds-listbox__option-text_entity" >{record.Name}</span >
+                          <span class="slds-listbox__option-meta" data-key={record.Id} data-name={record.Name} ></span>
+                          <template if:true={showHistory}>
+                            <span class="slds-listbox__option-meta" data-key={record.Id} data-name={record.Name}>
+                              תאריך: {record.CreatedDate}, מחיר אחרון:
+                              {record.UnitPrice}</span>
+                          </template>
+                        </span>
+                      </div>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+  
+            </template>
+          </template>
+        </div>
+      </div>
+      <div>
+        <lightning-combobox disabled={disabled} class="slds-combobox_object-switcher slds-combobox_addon-end" placeholder="סנן" id="filter-id-4" variant="label-hidden" onchange={getFilterdProducts} options={masterProductsOptions}>
+        </lightning-combobox>
+      </div>
+    </div>
+  </div>
+</template>

@@ -1,0 +1,54 @@
+.oppLine {
+    background-color: rgb(248, 248, 241);
+    margin: 0.3rem;
+    border-radius: 0.4rem;
+    height: auto;
+    /* display: flex; */
+    /* justify-content: center; */
+    /* align-items: center; */
+    /* flex-direction: column; */
+    /* width: 100% */
+}
+
+.spaceBetween{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.plotTotalDunams{
+    position: absolute;
+    z-index: 2;
+    margin-right: 70px;
+}
+.verticalLineRight {
+    border-right: 1px solid #a39e9e48;
+}
+
+.mspl {
+float: left;
+} 
+
+.plotAddingIcon{
+   position: absolute;
+   z-index: 2;
+   margin-right: 3.2rem;
+}
+
+.hidden{
+    display: none;
+}
+
+.editIcon:hover{
+    cursor: pointer;
+    --sds-c-icon-color-foreground-default: rgb(71, 135, 192);
+}
+.editIcon2:hover{
+    cursor: pointer;
+    --sds-c-icon-color-foreground-default: rgb(71, 135, 192);
+}
+
+.editIcon2{
+    position: absolute;
+    z-index: 2;
+    margin-right: 50px;
+}

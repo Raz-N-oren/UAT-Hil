@@ -1,0 +1,107 @@
+h1 {
+	font-family: Arial Unicode MS;
+	font-size: 25px;
+}
+
+h2 {	background-color : silver; 
+	border-style: solid none solid none;
+	font-family: Arial Unicode MS;
+	padding-left: 7px;
+	font-size: 18px;
+}
+h3	{
+	border-style: none none solid none;
+	font-size: 12px;
+	font-family: Arial Unicode MS;
+}
+img {
+	width:100%;
+	max-width: 650px;
+}
+.tdLabel{
+	
+	font-family: Arial Unicode MS;
+	font-size: 13px;
+	text-align: left;
+	vertical-align: top;
+	width: 10%;
+}
+.tdOutputField{
+	font-family: Arial Unicode MS;
+	font-size: 11px;
+	text-aling: left;
+	width: 40%;
+	vertical-align: top;
+}
+.tdOutputFieldLong{
+	font-family: Arial Unicode MS;
+	font-size: 11px;
+	text-aling: left;
+	vertical-align: top;
+	width: 90%;
+}
+inlineDivs{
+	display: table-row;
+	width: 100%; 
+}
+.blankRow{
+	height: 11px;
+	background-color: #FFFFFF;
+}
+.visit-header{
+	font-family: Arial Unicode MS;
+	color: #111847;
+	width:77%;
+	float: left;
+}
+.table-header{
+	background-color: #404040 ;
+	font-family: Arial Unicode MS; 
+	color : white;
+	font-size: 12px;
+	border: 0px;
+}
+.table1 {
+	border-spacing: 0px;
+	border-collapse: collapse;
+	border: 0px;
+
+}
+.table1 th{
+	text-align: center; 
+	border: 1px solid black;
+	font-family: Arial Unicode MS; 
+	font-size: 12px; 
+}
+.table1 td { 
+	border: 1px solid black;
+  	font-size: 10px; 
+  	font-family: Arial Unicode MS; 
+  	text-align: left; 
+}
+.tdCenter{
+	border: 1px solid black;
+  	font-size: 10px; 
+  	font-family: Arial Unicode MS; 
+  	text-align: center !important;
+}
+.company-logo{
+	width: 23%;
+	height: auto;
+}
+.parent {
+    width: 100%;
+    margin-bottom:10px
+ }
+.child{
+    display: inline-block;
+    width: 49%;
+    margin-bottom:10px
+}
+@page {
+	border-bottom-style: solid;
+	  @bottom-right {
+		content: counter(page) " of " counter(pages);
+	  }
+}
+

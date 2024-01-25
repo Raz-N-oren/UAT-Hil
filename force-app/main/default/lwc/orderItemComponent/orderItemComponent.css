@@ -1,0 +1,196 @@
+.main_container{
+    margin-bottom: 15px;
+}
+
+.container{
+    margin-bottom: 2px;
+    margin-top: 2px;
+    border: 1px solid rgb(196, 196, 196);
+    border-radius: 8px;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%
+}
+.general{
+    display: block;
+    margin-top: 10px;
+    padding:2px;
+    margin: 2px 5px; 
+    width: auto;
+}
+.priceAndDiscount{
+    display: inline-block;
+    margin-top: 10px;
+    padding:2px;
+    margin: 2px 5px; 
+    /* width: auto; */
+    max-width: 7rem;
+}
+table, th, td {
+    border: 1px solid rgb(184, 183, 183);
+    border-collapse: collapse;
+    padding: 8px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+.disabled{
+    pointer-events: none;
+    opacity: 0.8;
+}
+/* .radioGroupDiv{
+    position: absolute;
+    z-index: 2;
+    margin-right: 10px;
+    transform: translateY(-10px)scale(0.8);
+} */
+
+.bgtext {
+    position: relative;
+}
+
+.bgtext:before {
+    margin: 3rem;
+    content: "מבוטל";
+    position: absolute;
+    transform: rotate(300deg);
+    -webkit-transform: rotate(300deg);
+    color: rgb(187, 182, 182);
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+}
+.headerLarge{
+    display: block;
+    width: 100%;
+    height: 2px;  
+}
+.bodyLarge{
+    width: 100%;
+    height: auto;  
+}
+.trashBtn{
+cursor: pointer;
+margin: 4px;
+z-index: 1;
+position: relative;
+}
+.areasCheckbox{
+    font-size: 0.75rem;
+}
+.add10pxtop{
+    padding-top: 10px;
+}
+.add2pxtop{
+    padding-top: 2px;
+}
+.add30pxtop{
+    padding-top: 35px;
+}
+.white-bgc{
+    padding: 0px;
+    background-color: white;
+}
+/* button{
+    background-color: white;
+    border: none;
+    padding-right: 4px;
+    font-size: 13px;
+    font-family: sans-serif;
+    cursor: pointer;
+} */
+select:required:invalid {
+    color: #666;
+  }
+  option[value=""][disabled] {
+    display: none;
+  }
+  option {
+    color: #000;
+  }
+  .editIcon:hover{
+    cursor: pointer;
+    --sds-c-icon-color-foreground-default: rgb(71, 135, 192);
+  }
+.blueOnHover:hover{
+    color: #0070d2;
+}
+.spaceBetween{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.pills{
+    position: fixed;
+}
+h2{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.hidden{
+    display: none;
+}
+.extensContainer{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.deliveryPopupIcon{
+    cursor: pointer;
+}
+.percentIcon{
+    position: absolute;
+    z-index: 1;
+    margin: 25px 2px 0 0;
+}
+.checkbox{
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.checkbox1{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;  
+}
+.deliveryNoteIcon{
+    z-index: 2;
+    transform: translateY(5px);
+}
+.statusP{
+    align-self: center;
+    padding: 0 5px;
+}
+.checkbox2{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;  
+}
+.checkboxGroup{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;  
+    flex-direction: column;
+}
+select {
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.desktopStyleForMeasureUnit{
+    display: block;
+     /* margin-top: 22px; */
+}
+.mobileStyleForMeasureUnit{
+    display: block;
+}
+.tosafimStyle{
+    font-size: 11px;
+    margin-top: 7.5%;
+}
+.minWidth {
+    min-width: 6.5rem;
+}

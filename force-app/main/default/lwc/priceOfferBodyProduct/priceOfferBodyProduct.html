@@ -1,0 +1,148 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <lightning-record-edit-form object-api-name="OpportunityLineItem" record-id={oliId} onsubmit={submitForm} onsuccess={handleSuccess} onerror={handleError}>
+        <div class="slds-p-around_medium oppLine">
+            <div class="slds-grid slds-gutters slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-4">
+
+                    <div id="div1" class="slds-grid slds-gutters slds-wrap" >
+                      <!--מוצר-->
+                        <lightning-input-field class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_4-of-12" 
+                        field-name="Product2Id" variant="label-stacked" 
+                        value={oliRec.Product2Id} onchange={prodSelected} disabled={isNotDraft} required></lightning-input-field>
+                     <!--יחידת מידה-->
+                     <template if:true={isChemicals}> <!--אם זה כימיקלים-->
+                        <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_1-of-12 minWidth" field-name="Unit_of_measure__c" variant="label-stacked" value={oliRec.Unit_of_measure__c} onchange={unitSelected} disabled={isNotDraft} required></lightning-input-field>
+                     </template>
+                        <!--שדה כמות כמות - מוצג רק בעסקת מסגרת.  נכון-->
+                     <lightning-input-field class={isQuantityVisible} field-name="Quantity" variant="label-stacked" value={oliRec.Quantity} onchange={quantityChanged} disabled={isNotDraft}></lightning-input-field>
+                     <!--מחיר-->
+                        <lightning-input class="slds-col slds-size_1-of-2 slds-large-size_1-of-12 minWidth priceInput" field-name="UnitPrice"  type="number" name="price" label="מחיר" value={oliRec.UnitPrice} onchange={unitPriceSelected} step="0.01" disabled={isPriceAvailable} required={isBasePriceValueTrue}> </lightning-input>
+                   <template if:false={isChemicals}> <!--אם זה כימיקלים-->
+                       <!--הנחה--> 
+                       <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_2-of-12 minWidth" field-name="Discount" variant="label-stacked" value={oliRec.Discount} 
+                       onchange={discountChanged} disabled={isNotDraft} required></lightning-input-field>
+                        <!--מסתירה מטבע תנאי תשלום והנחה במצב בחירת כימיקלים-->
+                    </template>
+                     <!--מטבע-->
+                    <template if:true={isChemicals}> 
+                        <lightning-input-field id="currency" class="slds-col slds-size_1-of-2 slds-large-size_1-of-12 minWidth" field-name="Currency__c" variant="label-stacked" value={oliRec.Currency__c} onchange={currencySelected} disabled={isNotDraft} required>
+                        </lightning-input-field>
+                        <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_2-of-12 minWidth slds-p-top_large basePriceInput" field-name="Base_Price__c" variant="label-stacked" value={oliRec.Base_Price__c} checked={oliRec.Base_Price__c} onchange={BasePriceSelected} disabled={isBasePriceAvailable}>
+                        </lightning-input-field>
+                   </template>
+
+                      <!--הזמנת רכש -->        
+                      <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_1-of-12 minWidth" field-name="Purchase_Order__c" variant="label-stacked" value={oliRec.Purchase_Order__c} onchange={PurchaseOrderSelected} disabled={isNotDraft}></lightning-input-field>
+
+                     <!--מעל/מתחת -->    
+                     <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_2-of-12 minWidth" 
+                     onchange={overBelowChanged} field-name="OverBelowAmount__c" variant="standard" value={oliRec.OverBelowAmount__c} disabled={isNotDraft}>
+                     </lightning-input-field>     
+                     <!-- מעל/מתחת - כמות סקייל-->    
+                     <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_1-of-12 minWidth" field-name="ScaleQuantity__c" variant="label-stacked" value={oliRec.ScaleQuantity__c} onchange={scaleQuantityChanged}    disabled={isNotDraft}>
+                     </lightning-input-field>  
+
+                </div>
+                <template if:true={isChemicals}><div style="border-bottom:1px solid rgb(209, 208, 208) ; margin-bottom:10px;margin-top:10px;"></div></template>
+                <div id="div2" class="slds-grid slds-gutters slds-wrap" if:true={isChemicals}>
+                    <!--הובלה-->
+                   <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_2-of-12 minWidth" field-name="Transaction_Type__c" variant="label-stacked" value={oliRec.Transaction_Type__c} onchange={transactionTypeSelected} disabled={isNotDraft} required></lightning-input-field>
+                    <!--סוג אריזה-->
+                   <!-- <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_2-of-12 minWidth" field-name="Packing_Type__c" variant="label-stacked" value={oliRec.Packing_Type__c} onchange={packingTypeSelected} disabled={isNotDraft} ></lightning-input-field> -->
+                    <!--נקודת מכירה-->
+                    <lightning-combobox class="slds-col slds-size_1-of-2 slds-large-size_2-of-12 minWidth" label="נקודת מכירה" name="loadingPoint" placeholder="נקודת מכירה" value={oliRec.Loading_Point__c} options={loadingPointOptions} variant="label-stacked" disabled={isNotDraft} onchange={handleLoadingPointChange}></lightning-combobox>
+                   <!--יחידת מידה/משלוח-->
+                    <lightning-input-field required={isRegularTransactionTypeValue} class="slds-col slds-size_1-of-2 slds-large-size_2-of-12 minWidth" onchange={deliveryUnitOfMeasureChanged} field-name="DeliveryUnitOfMeasure__c" variant="standard" disabled={isNotDraft} value={oliRec.DeliveryUnitOfMeasure__c}></lightning-input-field>
+                   <!--עלות הובלה-->    
+                   <lightning-input-field required={isRegularTransactionTypeValue} class="slds-col slds-size_1-of-2 slds-large-size_1-of-12 minWidth" onchange={deliveryCostChanged} field-name="DeliveryCost__c" variant="standard" disabled={getDeliveryCostGetter} value={oliRec.DeliveryCost__c}></lightning-input-field> 
+                   <!--מטבע הובלה-->    
+                   <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_1-of-12 minWidth" onchange={transportationCurrencyChanged} field-name="transportation_currency__c" variant="standard" disabled={isNotDraft} value={oliRec.transportation_currency__c}></lightning-input-field> 
+                   <!--תנאי תשלום-->        
+                   <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_1-of-12 minWidth" field-name="Terms_of_Payment__c" variant="label-stacked" value={oliRec.Terms_of_Payment__c} onchange={termsOfPaymentSelected} disabled={isNotDraft}></lightning-input-field>
+
+
+                </div>
+                <template if:true={isChemicals}><div style="border-bottom:1px solid rgb(209, 208, 208) ; margin-bottom:10px;margin-top:10px;"></div></template>
+                <!--מסתירה מחיר אריזה מעל/מתחת, כמות סקייל וח-ן מטבע חוץ בבחירת תחום כימיקלים-->
+                <template if:true={isChemicals}> 
+                    <div  if:true={isAddingNote} id="div3" class="slds-grid slds-gutters slds-wrap">
+                                           <!--תאריך ערך להמרה" -->  
+                   <lightning-input-field  class="slds-col slds-size_1-of-2 slds-large-size_2-of-12 minWidth" onchange={conversionValueDateChanged} field-name="conversionValueDate__c" variant="standard" disabled={isNotDraft} value={oliRec.conversionValueDate__c}></lightning-input-field>    
+                   
+                    <!--דמי מילוי -->    
+                    <lightning-input-field  class="slds-col slds-size_1-of-2 slds-large-size_1-of-12 minWidth" onchange={refillFeesChanged} field-name="refillFees__c" variant="standard" disabled={isNotDraft} value={oliRec.refillFees__c}></lightning-input-field> 
+
+                    <!--מחיר אריזה-->    
+                    <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_1-of-12 minWidth" 
+                     onchange={packagePriceChanged} field-name="PackagingPrice__c" variant="standard" value={oliRec.PackagingPrice__c} disabled={isNotDraft}>
+                    </lightning-input-field>  
+ 
+                    <!--חשבונית מטבע זר -->    
+                    <lightning-input-field class="slds-col slds-size_1-of-2 slds-large-size_2-of-12 minWidth slds-p-top_large"
+                            field-name="Foreign_currency_invoice__c" variant="standard" value={oliRec.Foreign_currency_invoice__c} onchange={foreignCurrencyChanged} disabled={isNotDraft}></lightning-input-field>
+                     </div>  
+                 </template>
+                </div>
+                <div class={showPriceForLiter} if:true={isChemicals}>
+                    <p><b> מחיר ליטר: &nbsp;</b>
+                        <lightning-formatted-number value={priceForLiter} format-style="currency" currency-code={oliRec.Currency__c}></lightning-formatted-number>
+                    </p>
+                </div>
+                <div if:true={showOrderAmountOfProduct}>
+                    <p>כמות שהוזמנה מהצעה זו: {orderAmountOfProduct} טון</p>
+                </div>
+            </div>
+            <div class="slds-grid slds-wrap slds-large-size_2-of-12" if:true={showMatrixData}>
+                <div class="slds-col slds-grid slds-form-element__label">
+                    <p>הנחת יעד</p>
+                    <p class="slds-border_bottom slds-m-left_medium slds-m-right_medium">%<lightning-formatted-number
+                            value={targetDiscount}></lightning-formatted-number>
+                    </p>
+                </div>
+                <div class="slds-col slds-grid slds-form-element__label">
+                    <p>הנחה מקסימלית</p>
+                    <p class="slds-border_bottom slds-m-left_medium slds-m-right_medium">%<lightning-formatted-number
+                            value={maxDiscount}></lightning-formatted-number>
+                    </p>
+                </div>
+            </div>
+
+            <template if:true={isAddingNote}>
+                <lightning-textarea id="description" class="textarea slds-col slds-size_2-of-2 slds-large-size_6-of-12 minWidth" name="description" label="הערה למוצר"
+                    placeholder="הקלד כאן.." value={oliRec.Description} onchange={descriptionChanged}
+                    disabled={isNotDraft}></lightning-textarea>
+            </template>
+
+            <!-- Hidden fields -->
+            <div class="slds-hide">
+
+                <lightning-input-field id="price" class="slds-col slds-size_1-of-12 minWidth" field-name="UnitPrice"
+                    variant="label-hidden" value={oliRec.UnitPrice}></lightning-input-field>
+
+                <lightning-input-field class="textarea" field-name="Description" variant="label-hidden"
+                    value={oliRec.Description}></lightning-input-field>
+
+                <lightning-button class="slds-m-top_small oliSubmit1" type="submit" label="submit"></lightning-button>
+            </div>
+
+            <div class="spaceBetween">
+                <lightning-button label={toggleNoteBtnText} variant="base" title={toggleNoteBtnText}
+                    class="slds-p-top_x-small" onclick={toggleNote}></lightning-button>
+                <div>
+                    <lightning-button-icon if:true={isChemicals} onclick={duplicateProduct} icon-name="utility:copy"
+                        variant="container" alternative-text="שכפל" size="medium" class="slds-m-left_xx-small"
+                        title="שכפל">
+                    </lightning-button-icon>
+                    <lightning-button-icon onclick={removeProduct} icon-name="utility:delete" variant="container"
+                        alternative-text="מחק" size="medium" class="slds-m-left_xx-small" title="מחק"
+                        disabled={isNotDraft}></lightning-button-icon>
+                </div>
+
+            </div>
+        </div>
+    </lightning-record-edit-form>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+</template>

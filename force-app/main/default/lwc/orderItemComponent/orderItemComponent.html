@@ -1,0 +1,510 @@
+<!-- sldsValidatorIgnore -->
+<template>
+  
+  <div class="main_container">
+    <div title={orderItemContainerTitle} class={container} id="mainDiv" style="margin: 10px 10px; border: 1px solid #A9A9A9; padding: 5px; border-radius:10px;background-color:#F8F8F8;">
+      <!-- <div  class="spaceBetween"> -->
+        <!-- <lightning-input type="checkbox" label="My boolean value" ></lightning-input> -->
+      <div id="1" class="slds-col slds-grid slds-wrap">
+        <div class="slds-col" style="margin-top: 4px; min-width: 500px;">
+          <!--חיפוש מוצרים-->
+          <c-order-products-autocomplete
+            selected-value={rec.product.name}
+            selected-record-id={rec.product.id}
+            disabled={isOrderProductItemNotForChange}
+            onrecordselection={handleProductRecordSelect}
+            onrecordsfocus={handleFocusOGL}
+            account-id={accountId}
+            selected-product={selectedProduct}
+            is-shown={isShown}
+            is-hazard={isHazard}
+            >
+          </c-order-products-autocomplete>
+          <!--checkbox full or half area-->
+          <div if:true={isDesktop} style="font-size: 10px;display: inline-block;line-height: 5px !important;padding: 0px !important;">
+            <div class="radioGroupDiv">
+              <input type="checkbox" id="halfArea" checked={halfArea} onchange={handleHalfAreaCheckboxChange}
+                class="slds-m-around_xx-small" disabled={isNotAllowedToChangeBecuseOrderItemStatus}/>
+              <label for="halfArea" class="slds-m-around_xx-small">חצי משטח</label><br />
+              <input type="checkbox" id="fullArea" checked={fullArea} onchange={handleFullAreaCheckboxChange}
+                class="slds-m-around_xx-small" disabled={isNotAllowedToChangeBecuseOrderItemStatus}/>
+              <label for="fullArea" class="slds-m-around_xx-small" >משטח מלא</label>
+              <!-- <lightning-radio-group name="radioGroup" onchange={fullOrHalfSurfaceHandler}
+                            options={surfaceRadioOptions} type="button">
+                        </lightning-radio-group> -->
+            </div>
+          </div>
+        </div>
+        <div class={qunatityContainerStyle}>
+          <div style="display: flex">
+            <div class="general">
+              <lightning-input
+                style="margin-top: -2px; margin-right: 0px"
+                type="number"
+                disabled={isNotAllowedToChangeBecuseOrderItemStatus}
+                label={labelAmount}
+                variant="standard"
+                min={getMinQuantity}
+                max={maxQuantity}
+                class="quantity general"
+                value={rec.quantity}
+                step="0.001"
+                onchange={handleQuantityChange}
+                placeholder="כמות"
+                required></lightning-input>
+            </div>
+            <div class={styleForMeasureUnit}>
+              <div class="general slds-col">
+                <lightning-combobox
+                  class={unitOfMeasureComboboxStyle}
+                  label="מידה"
+                  name="unitOfMeasure"
+                  disabled={isNotAllowedToChangeBecuseOrderItemStatus}
+                  placeholder="מידה"
+                  value={rec.unitOfMeasure}
+                  variant={quantityUnitOfMeasureComboboxVariant}
+                  options={unitOfMeasureOptions}
+                  onchange={onSelectUnitOfMeasureChange}
+                  required></lightning-combobox>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- <div if:true={showSalesPoint} class="general slds-col slds-size_x-small">
+          <lightning-combobox
+            label="נק' מכירה"
+            name="loadingPoint"
+            placeholder="נק' מכירה"
+            value={rec.loadingPoint.id}
+            options={loadingPointOptions}
+            onchange={handleLoadingPointChange}
+            required></lightning-combobox>
+        </div> -->
+        <div if:true={showSalesPoint} class="general slds-col slds-size_x-small minWidth">
+          <label class="slds-form-element__label "> <abbr title="required" class="slds-required">*</abbr>נק' מכירה </label>
+          <c-order-generic-lookup 
+            object-name="OrderItem" 
+            selected-value={rec.loadingPoint.name}
+            selected-record-id={rec.loadingPoint.id}
+            read-only={isNotAllowedToChangeBecuseOrderItemStatusAndOrderType}
+            onrecordselection={handleLoadingPointChange}
+            get-all-on-focus="true"
+            search-placeholder="דשנים"
+            message={realtorMessage} 
+            extrawhereclause={salesPointExtraWhereClause}
+            required>
+          </c-order-generic-lookup>
+        </div>
+        <div class="general slds-col slds-size_x-small">
+          <label class="slds-form-element__label">
+            <span if:true={getPrivateTransport} >
+              <abbr if:true={isDischargeLocationRequiredByOrederType} title="required" class="slds-required">*</abbr>
+            </span>
+            מקום פריקה
+            <template if:true={accountId}>
+              <!-- + button - just opening modal-->
+              <lightning-icon disabled={isNotAllowedToChangeBecuseOrderItemStatus} icon-name={isForEditIcon} class="editIcon slds-m-left_x-small" alternative-text="Edit" size="xx-small" title={isForEditTitle}
+                onclick={editTankPointHandler}></lightning-icon> </template></label>
+          <label class="slds-form-element__label">כמויות<template if:true={accountId}>
+              <lightning-icon disabled={isNotAllowedToChangeBecuseOrderItemStatus} icon-name={isForEditIcon} class="editIcon slds-m-left_x-small" alternative-text="Edit" size="xx-small" title={isForEditTitle} onclick={getLastViewRecords}>
+              </lightning-icon> </template></label>
+          <c-order-generic-lookup
+            object-name="Tank__c"
+            selected-value={rec.dischargeLocation.name}
+            selected-record-id={rec.dischargeLocation.id}
+            read-only={isNotAllowedToChangeBecuseOrderItemStatus}
+            fields-to-query={tankPointsFields}
+            onrecordselection={handleTankPointsChange}
+            get-all-on-focus="true"
+            message-for-last-view="מקומות פריקה מהזמנות קודמות.."
+            search-placeholder="חיפוש נקודת פריקה"
+            extrawhereclause={tankPointsExtraWhereClause}
+            message={realtorMessage}
+            required={isDischargeLocationRequiredByOrederType}
+            class="prika general"
+            >
+
+          </c-order-generic-lookup>
+        </div>
+        <div class="general slds-col slds-size_x-small">
+          <c-mutli-select-picklist onselectedvaluesent={possibleTransportchangeHandler} picklistlabel="הובלה" placeholder="בחר הובלה" values={possibleTransportOptions} disabled={isNotAllowedToChangeBecuseOrderItemStatus}> </c-mutli-select-picklist>
+        </div>
+        <div if:true={isLoadingPointTypeSuppliers} class="general slds-col slds-size_x-small">
+          <lightning-input type="text" value={rec.Purchase_Order__c} onchange={handlePurchaseOrderChange} label="מספר הזמנת רכש" disabled></lightning-input>
+        </div>
+        <template if:true={showSpecialPrice}>
+          <div class="general slds-col slds-size_x-small">
+            <!-- class="slds-size_xx-small specialPrice" -->
+            <lightning-input type="number" class="slds-size_xx-small " field-level-help="מחיר לפי הזמנת לקוח" label="מחיר מיוחד" value={rec.specialPrice} onchange={handleSpecialPriceChange} > </lightning-input>
+            <p if:true={showSpecialPrice} style="font-size: 9px;"> מחירון: {productPrice} </p>
+          </div>
+        </template>
+        <template if:true={showSpecialPrice}>
+          <div class="general slds-col slds-size_x-small">
+            <!-- class="slds-size_xx-small specialPrice" -->
+            <lightning-input type="number" class="slds-size_xx-small " field-level-help="מחיר הובלה לפי הזמנת לקוח"  label="מחיר הובלה" value={rec.transportPrice} onchange={handleTransportPriceChange} > </lightning-input>
+            <p if:true={showSpecialPrice} style="font-size: 9px;"> מחירון: {chemicalTransportPriceGetter} </p>
+          </div>
+        </template>
+        <!-- <template if:true={showSpecialPrice}>
+          <div class="general slds-col slds-size_x-small">
+            <lightning-input type="text" class="slds-size_xx-small " field-level-help=" יחידת מידה הובלה לפי הזמנת לקוח"  label="יחידת מידה" value={rec.specialPrice} onchange={handleSpecialPriceChange} > </lightning-input>
+            <p if:true={showSpecialPrice} style="font-size: 9px;"> מחירון: {deliveryUnitOfMeasureGetter} </p>
+          </div>
+        </template> -->
+        <template if:true={showSpecialPrice}>
+          <div class={styleForMeasureUnit}>
+            <div class="general slds-col">
+              <lightning-combobox
+                class={unitOfMeasureComboboxStyle}
+                label="יחידת מידה"
+                name="deliveryUnitOfMeasure"
+                placeholder="יחידת מידה"
+                value={rec.deliveryUnitOfMeasure}
+                variant={quantityUnitOfMeasureComboboxVariant}
+                options={deliveryUnitOfMeasureOptions}
+                onchange={onSelectDeliveryUnitOfMeasureChange}
+                ></lightning-combobox>
+                <p if:true={showSpecialPrice} style="font-size: 9px;"> מחירון: {deliveryUnitOfMeasureGetter} </p>
+            </div>
+          </div>
+        </template>
+        <!-- הנחה - מוסתר-->
+        <template if:true={userIsAgrunom}>
+          <div class="priceAndDiscount slds-col slds-size_1-of-2">
+            <lightning-input type="number" value={prodPrice} onchange={productPriceChangeHandler} label="מחיר לאחר הנחה"></lightning-input>
+            </div>
+            <div class="priceAndDiscount slds-col slds-size_1-of-2" >
+              <label class="slds-form-element__label" for="text-input-id-2">הנחה מבוקשת</label>
+            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+              <lightning-icon size="xx-small" class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" icon-name="utility:percent"></lightning-icon>
+              <input type="number" id="text-input-id-2" class={discountInputClass} max="99.99" min="0.0" step="0.01" onchange={calculatePricesAfterDiscount} value={prodDiscount}/>
+                <span if:false={discountValid} class="slds-text-color_error">{discountUnvalidMessage}</span>
+              </div>
+              <span style="font-size:7px;line-height:0px !important; line-height: 0px !important;">*ההנחה המוצגת היא האחרונה שאושרה</span>
+          </div>
+        </template>
+        <template if:true={unloadingHasContact}>
+          <div if:true={isDesktop} class="spaceBetween" style="flex-wrap: nowrap; margin-top: 4px">
+            <lightning-input type="text" value={rec.relatedContactName} onchange={handleRelatedContactNameChanged} label="איש קשר למקום פריקה" disabled={isNotAllowedToChangeBecuseOrderItemStatus}></lightning-input>
+            <lightning-input class="slds-p-left_small" value={rec.relatedContactPhone} onchange={handleRelatedContactPhoneChanged} type="phone" label="טלפון" disabled={isNotAllowedToChangeBecuseOrderItemStatus} ></lightning-input>
+          </div>
+        </template>
+      </div>
+      <!--תוספים addIn-->
+      <div id="2" class="slds-col spaceBetween slds-border_top" if:true={isProductHasAddOn} style="justify-content: flex-start; padding-top: 2px; margin-top: 11px">
+        <!--כפתור אחוז/כמות-->
+        <div class="radioGroupDiv" if:false={isOrderProductItemNotForChange} style="margin-top: 11px" >
+          <lightning-radio-group name="radioGroup" onchange={radioGroupExtensionsHandler} options={extensionsOptions} value={extensionsOptionsValue} type="button">
+          </lightning-radio-group>
+        </div>
+        <template for:each={rec.extensions} for:item="extension" for:index="index">
+          <div key={extension.Id}  class="slds-grid slds-m-left_small slds-m-right_small" style="font-size: 11px; margin-top: 4px; padding: auto">
+            <h2 class="slds-m-right_small slds-m-left_small" style="margin-top: 10px">
+              <lightning-icon class="slds-m-right_small slds-m-left_small"
+                icon-name="standard:product_request_line_item" alternative-text="addOn" variant="inverse" size="x-small">
+              </lightning-icon ><span>{extension.Name}</span>
+            </h2>
+            <div if:false={isPrecentsInput} class="slds-grid">
+              <lightning-input style="width: 10em" type="number" step="0.001" class="slds-size_xx-small quantity extensions-quantity"
+                label="כמות"
+                onchange={handleExtensionQuantity}
+                data-index={index}
+                value={extension.quantity}>
+              </lightning-input>
+              <lightning-combobox name="unitOfMeasure"
+                placeholder="יחידת מידה"
+                value={extension.unitOfMeasure}
+                data-index={index}
+                label="יח מידה"
+                options={unitOfMeasureOptions}
+                onchange={handleExtensionUnitOfMeasure}>
+              </lightning-combobox>
+            </div>
+            <div if:true={isPrecentsInput}>
+              <lightning-input
+                class="extensions-quantity slds-m-right_small"
+                type="number"
+                onchange={handleExtensionQuantity}
+                data-index={index}
+                label="אחוז מחומר"
+                value={extension.quantity}
+              ></lightning-input>
+            </div>
+          </div>
+        </template>
+      </div>
+      <!-- <div id="3" class="slds-col slds-grid slds-wrap">
+                    <template if:true={isAddingNote}>
+                        <lightning-textarea class="textarea" value={rec.description} required={addingNoteReqiuerd}
+                            name="input2" label="הערה למוצר" placeholder="הקלד כאן.." onchange={handleOrderItemNote}>
+                        </lightning-textarea>
+                    </template>
+                    <div class="spaceBetween">
+                        <lightning-button label={toggleNoteBtnText} variant="base" title={toggleNoteBtnText}
+                            class="slds-p-top_x-small" onclick={toggleNote}></lightning-button>
+                        <div class="slds-grid">
+                            <div if:true={rec.deliveryNoteExist} class="statusP">
+                                <lightning-button-icon class="slds-m-left_xx-small deliveryPopupIcon"
+                                    onclick={handleDeliveryNotePopup} icon-name="custom:custom31"
+                                    alternative-text="תעודת משלוח" variant="inverse" size="x-small"></lightning-button-icon>
+                            </div>
+                            <p class="statusP slds-border_right" if:true={rec.status}>סטאטוס: {Status}</p>
+                            <p class="statusP slds-border_right" if:true={rec.status}>תאריך אחרון: {rec.supplyDate}</p>
+                            <p class="statusP" if:true={rec.status}>מוביל/קו: {rec.driver}</p>
+                            <lightning-button-icon onclick={handleDeleteAction} data-id={rec.id} icon-name="utility:delete"
+                                variant="container" alternative-text="Delete" class="slds-m-left_xx-small" title="Delete">
+                            </lightning-button-icon>
+                        </div>
+                    </div>
+                </div> -->
+
+      <div class="slds-col slds-size_1-of-1 slds-large-size_8-of-8 slds-p-left_small slds-p-right_small" >
+        <template if:true={isAddingNote}>
+          <lightning-textarea
+            class="textarea"
+            value={rec.Comment__c}
+            required={addingNoteReqiuerd}
+            name="input2"
+            label="הערה למוצר"
+            placeholder="הקלד כאן.."
+            onchange={handleOrderItemNote}>
+          </lightning-textarea>
+        </template>
+        <div class="spaceBetween">
+          <lightning-button disabled={isNotAllowedToChangeBecuseOrderItemStatus} label={toggleNoteBtnText} variant="base" title={toggleNoteBtnText} class="slds-p-top_x-small" onclick={toggleNote}></lightning-button>
+          <div class="slds-grid">
+            <div if:true={rec.deliveryNoteExist} class="statusP" style="pointer-events: auto !important">
+              <lightning-button-icon class="slds-m-left_xx-small deliveryPopupIcon" onclick={handleDeliveryNotePopup} icon-name="custom:custom31" alternative-text="תעודת משלוח" variant="inverse" size="x-small"></lightning-button-icon>
+            </div>
+            <p class="statusP slds-border_right" if:true={rec.status}> סטאטוס: {DisplayStatus} </p>
+            <p class="statusP slds-border_right" if:true={rec.supplyDate}> תאריך אחרון: {rec.supplyDate} </p>
+            <p class="statusP" if:true={rec.driver}>מוביל/קו: {rec.driver}</p>
+            <lightning-button-icon disabled={isNotAllowedToChangeBecuseOrderItemStatus} onclick={handleDeleteAction} data-id={rec.id} icon-name="utility:delete" variant="container" alternative-text="Delete" class="slds-m-left_xx-small" title="Delete">
+            </lightning-button-icon>
+          </div>
+        </div>
+      </div>
+      <!-- </div> -->
+    </div>
+
+    <!-- מודל הוספת נקודת פריקה -->
+    <template if:true={openDischargeLocationAdder}>
+      <!--accordion-->
+      <section role="dialog" tabindex="-1" aria-labelledby="dischargeLocationAdder" aria-modal="true" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container" >
+          <!--header: x btn and title-->
+          <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+              <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+            </button>
+            <h2 id="dischargeLocationAdder" class="slds-text-heading_medium slds-hyphenate">  {dischargeLocationModalTitle} </h2>
+          </header>
+          <!-- body start -->
+          <div class="slds-modal__content slds-p-around_medium" id="dischargeLocationAdder2">
+            <!--description list-->
+            <dl class="slds-list_vertical-space slds-wrap">
+              <lightning-card>
+                <div>
+                  <lightning-record-edit-form object-api-name="Tank__c" record-id={rec.dischargeLocation.id} onsubmit={closeModal} onsuccess={handleTankPointsEditFormSucces}>
+                    <lightning-messages></lightning-messages>
+                    <lightning-input-field required field-name="Name"></lightning-input-field>
+                    <template if:false={rec.dischargeLocation.id}>
+                      <lightning-input-field required value={accSettelment} field-name="Settlement__c"></lightning-input-field>
+                    </template>
+                    <template if:true={rec.dischargeLocation.id}>
+                      <lightning-input class="slds-m-around_medium" type="checkbox" onchange={handleTankPointActive} label="לא פעיל"></lightning-input>
+                      <lightning-input-field required field-name="Settlement__c"></lightning-input-field>
+                    </template>
+                    <lightning-input-field field-name="Driver_Note__c"></lightning-input-field>
+                    <lightning-input-field field-name="TaxiDelivery__c"></lightning-input-field>
+                    <lightning-input-field field-name="RelatedContact__c"></lightning-input-field>
+                    <lightning-input-field class="hidden" field-name="Account__c" value={accountId} ></lightning-input-field>
+                    <div class="slds-m-top_medium footerButtons">
+                      <lightning-button class="slds-m-around_x-small" type="button" label="ביטול" onclick={closeModal}></lightning-button>
+                      <lightning-button class="slds-m-around_x-small" type="submit" label="שמירה" variant="brand" ></lightning-button>
+                    </div>
+                  </lightning-record-edit-form>
+                </div>
+              </lightning-card>
+            </dl>
+          </div>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- מודל נקודת פריקה נגמר -->
+
+    <!-- מודל חלוקת פריקה לפי כמויות-->
+    <template if:true={openDischargeQuantityAdder}>
+      <section
+        role="dialog" tabindex="-1" aria-labelledby="dischargeLocationAdder" aria-modal="true" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <!--header: x btn and title-->
+          <header class="slds-modal__header">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick={closeDischargeQuantityModal}>
+              <lightning-icon
+                icon-name="utility:close"
+                alternative-text="close"
+                variant="inverse"
+                size="small"></lightning-icon>
+            </button>
+            <h2 class="slds-text-heading_medium slds-hyphenate">
+              {dischargeLocationModalTitle2}
+            </h2>
+          </header>
+          <!-- body start -->
+          <div class="slds-modal__content slds-p-around_small">
+            <!--description list-->
+            <lightning-card>
+              <div>
+                <div id="listbox-id-2-venu">
+                  <p>  **אנא מלא את השדות הרצויים, כך שסך הכמות לא תעלה על {rec.quantity} {rec.unitOfMeasure} </p>
+                  <ul role="presentation">
+                      <div class="slds-form slds-m-around_small slds-p-bottom_medium" style="border-bottom: 1px solid #b3b3b3;">
+                        <table style="width:100%">
+                          <tr>
+                            <th>נקודת פריקה</th>
+                            <th>חלוקה לפי כמות</th> 
+                          </tr>
+                          <template for:each={tankArray} for:item="record">
+                          <tr key={record.Name}>
+                            <td>{record.Name}</td>
+                            <td><input data-key={record.Name} type="number" placeholder="הזן כמות לפריקה..." min="0"
+                              class="slds-input" onchange={onchangeDischargeQuantity}/>
+                            </td>
+                          </tr>
+                        </template>
+                        </table>
+                      </div>
+                    <div class="slds-m-around_medium footerButtons slds-clearfix">
+                      <lightning-button class="slds-m-around_x-small slds-float_center"
+                        type="button" label="ביטול" onclick={closeDischargeQuantityModal}></lightning-button>
+                      <lightning-button
+                        class="slds-m-around_x-small slds-float_center"
+                        type="submit"
+                        label="שמירה"
+                        variant="brand"       
+                        onclick={onSubmitDischargeQuantity}
+                      ></lightning-button>
+                    </div>
+
+                  </ul>
+                </div>
+              </div>
+            </lightning-card>
+
+          </div>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- Add Discharge Location modal end -->
+    <!-- Modal Framedeal Start מודל עסקת מסגרת-->
+    <template if:true={testFrame}>
+      <section role="dialog" tabindex="-1" aria-labelledby="dischargeLocationAdder" aria-modal="true" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <!--header: x btn and title-->
+          <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeDischargeQuantityModal}>
+              <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+            </button>
+            <h2 class="slds-text-heading_medium slds-hyphenate"> עסקאות המסגרת הקיימות ללקוח ולמוצר שנבחרו </h2>
+          </header>
+          <!-- body start -->
+          <div class="slds-modal__content slds-p-around_small">
+            <lightning-card>
+              <div>
+                <div >
+                  <ul role="presentation">
+                      <div class="slds-form slds-m-around_small slds-p-bottom_medium" style="border-bottom: 1px solid #b3b3b3;text-align:center">
+                        <table style="width:100%;text-align:center">
+                          <tr style="text-align:center">
+                            <th style="text-align:center"> תאריך פתיחת הזמנה</th>
+                            <th style="text-align:center"> מספר הזמנת לקוח </th> 
+                            <th style="text-align:center"> יתרה </th> 
+                            <th style="text-align:center"> מחיר מיוחד </th> 
+                            <th style="text-align:center">  עסקת מסגרת להצגה  </th> 
+                          </tr>
+                          <template for:each={newFramedealArray} for:item="record" >
+                          <tr key={record.Id} style="text-align:center" >
+                            <td style="text-align:center">{record.Order.OrderCreatedDate__c}</td>
+                            <td style="text-align:center">{record.Order.Payer_Approval__c}</td>
+                            <td style="text-align:center" >{record.CalculatedQuantity}</td>
+                            <td style="text-align:center">{record.Price_from_customer_order__c}</td>
+                            <!-- <td><lightning-input data-key={record.Id} data-order={record.OrderId} type="number" onchange={handleFramedealChosen} ></lightning-input> 
+                          </td> -->
+                          <td style="text-align:center">  <lightning-input type="checkbox-button" data-key={record.Id} data-order={record.OrderId} data-quantity={record.Quantity} onchange={onSaveFrameDeal}></lightning-input></td>
+                          </tr>
+                        </template>
+                        </table>
+                      </div>
+                    <div class="slds-m-around_medium footerButtons slds-clearfix">
+                      <lightning-button class="slds-m-around_x-small slds-float_center" type="button" label="ביטול" onclick={closeDischargeQuantityModal}></lightning-button>
+                      <lightning-button class="slds-m-around_x-small slds-float_center" type="submit" label="שמירה" variant="brand" onclick={closeDischargeQuantityModal} ></lightning-button>
+                    </div>
+
+                  </ul>
+                </div>
+              </div>
+            </lightning-card>
+
+          </div>
+          
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+ <!-- Modal Framedeal End-->
+
+    <!-- Delivery Note Modal/ PopUp Viewer -->
+    <template if:true={openDeliveryNoteModal}>
+      <section role="dialog" tabindex="-1" aria-labelledby="deliveryNoteModal" aria-modal="true" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <!-- Delivery Note Modal Viewer header start -->
+          <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeDeliveryNoteModal}>
+              <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+            </button>
+            <h2 id="deliveryNote1" class="slds-text-heading_medium slds-hyphenate">תעודת משלוח</h2>
+          </header>
+          <!-- Delivery Note Modal Viewer body start -->
+          <div class="slds-modal__content slds-p-around_medium" id="deliveryNote2">
+            <dl class="slds-list_vertical-space slds-wrap">
+              <lightning-card>
+                <div>
+                  <div if:true={deliveryNoteId}>
+                    <lightning-record-view-form object-api-name="DeliveryNote__c" onload={handleDeliveryNoteLoad} record-id={deliveryNoteId}>
+                      <lightning-spinner if:false={deliveryNoteLoad} alternative-text="Loading"> </lightning-spinner>
+                      <lightning-output-field field-name="Name"></lightning-output-field>
+                      <lightning-output-field field-name="Status__c"></lightning-output-field>
+                      <lightning-output-field field-name="DeliveryNoteNo__c"></lightning-output-field>
+                      <lightning-output-field field-name="DeliveryCompanyName__c"></lightning-output-field>
+                      <lightning-output-field field-name="TruckNumber__c"></lightning-output-field>
+                      <lightning-output-field field-name="DriverName__c"></lightning-output-field>
+                      <lightning-output-field field-name="DeliveryType__c"></lightning-output-field>
+                      <lightning-output-field class="slds-text-align_left" field-name="LoadingQuantity__c"></lightning-output-field>
+                      <lightning-output-field class="slds-text-align_left" field-name="DischargeQuantity__c"></lightning-output-field>
+                      <lightning-output-field class="slds-text-align_left" field-name="UnitOfMeasure__c"></lightning-output-field>
+                      <lightning-output-field class="slds-text-align_left" field-name="Price_To_MT__c"></lightning-output-field>
+                      <lightning-output-field class="slds-text-align_left" field-name="Price_To_3M__c"></lightning-output-field>
+                      <lightning-output-field class="slds-text-align_left" field-name="delivery_cost__c"></lightning-output-field>
+                      <lightning-output-field class="slds-text-align_left" field-name="Delivery_discount__c"></lightning-output-field>
+                      <lightning-output-field class="slds-text-align_left" field-name="Discount__c"></lightning-output-field>
+                      <lightning-output-field class="slds-text-align_left" field-name="Total_Price__c" ></lightning-output-field>
+                    </lightning-record-view-form>
+                  </div>
+                </div>
+              </lightning-card>
+            </dl>
+          </div>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- Delivery Note Modal Viewer end -->
+  </div>
+</template>

@@ -1,0 +1,14 @@
+lightning-accordion-section {
+    --slds-c-accordion-summary-color-background: rgb(229, 229, 229);
+    padding-top: 5px;
+}
+@media screen and (min-width: 992px) {
+lightning-input-field {
+        /* padding-right: 20% !important; */
+        width: 80% !important;
+}
+}
+
+.disabled {
+    pointer-events: none;
+}

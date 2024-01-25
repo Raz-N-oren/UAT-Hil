@@ -1,0 +1,9 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,lightning:hasPageReference,force:lightningQuickAction,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" access="global" >
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="selectedRecordId" type="String" />
+    
+    <c:newOpportunityContainer aura:id="newOpportunityContainer" recordTypeId="{!v.selectedRecordId}">
+
+    </c:newOpportunityContainer>
+</aura:component>

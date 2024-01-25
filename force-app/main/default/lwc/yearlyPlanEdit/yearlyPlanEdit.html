@@ -1,0 +1,452 @@
+<template>
+	<div class="slds-is-relative main-element" style="border-left: 1px solid rgb(221, 219, 218)">
+		<template if:true={loading}>
+			<lightning-spinner alternative-text="Loading" variant="brand"></lightning-spinner>
+		</template>
+		<lightning-record-edit-form
+			object-api-name="OpportunityLineItem"
+			onsuccess={handleSuccess}
+			onsubmit={insertOppLineItem}
+			onerror={handleError}
+		>
+			<lightning-messages></lightning-messages>
+
+			<!--  Main layout -->
+			<div class="slds-grid slds-gutters slds-grid_vertical form-edit">
+				<!-- פרטים כלליים -->
+				<div class="slds-col">
+					<lightning-card title="פרטים כללים" icon-name="custom:custom62">
+						<lightning-button slot="actions" label="נקה שדות" title="נקה שדות" onclick={resetForm}>
+						</lightning-button>
+						
+						<div>
+							<!-- בחר חלקה -->
+							<template if:true={oppProductId}>
+								<div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+									<span class="slds-assistive-text">warning</span>
+									<span 
+										class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small" 
+										title="Description of icon when needed"
+									>
+										<lightning-icon 
+											icon-name="utility:warning"
+											alternative-text="warning"
+											variant="inverse"
+											size="x-small"
+										></lightning-icon>              
+									</span>
+									<h2>שים לב! בחירת חלקות יחשבו מחדש את השורה</h2>
+									<!-- <div class="slds-notify__close">
+										<button 
+											class="slds-button slds-button_icon slds-button_icon-small" 
+											title="Close"
+										>
+										<lightning-icon icon-name="utility:close"
+										alternative-text="close"
+										variant="inverse"
+										size="x-small" ></lightning-icon>
+										<span class="slds-assistive-text">סגירה</span>
+										</button>
+									</div> -->
+								</div>
+							</template>
+
+							<c-mutli-select-picklist
+								onselectedvaluesent={updateSelectedPlots}
+								picklistlabel="חלקות"
+								placeholder="בחר חלקות"
+								values={allPlotsData}
+								class="plots-picklist"
+							></c-mutli-select-picklist>
+						</div>
+
+						<div>
+							<!-- בחר שלב גידול -->
+							<lightning-combobox
+								class="stagegrowth"
+								name="stagegrowth   "
+								label="שלב גידול"
+								value=""
+								placeholder="בחר שלב גידול"
+								options={growthStageData}
+								onchange={updateFertilizationSuggestionsFields}
+							></lightning-combobox>
+						</div>
+
+						<div>
+							<!-- בחירת תאריך -->
+							<div class="slds-grid slds-gutters" style="margin-top: 12px">
+								<div class="slds-col">
+									<!-- מתאריך -->
+									<lightning-combobox
+										class="startdate"
+										name="startdate"
+										label={label.From_date}
+										value={startDate}
+										placeholder="התחלה"
+										options={dates}
+										onchange={updateStartDate}
+										required
+									></lightning-combobox>
+								</div>
+
+								<div class="slds-col">
+									<!-- עד תאריך -->
+									<lightning-combobox
+										class="enddate"
+										name="enddate   "
+										label="עד תאריך"
+										value={endDate}
+										placeholder="סיום"
+										options={dates}
+										onchange={updateEndDate}
+									></lightning-combobox>
+								</div>
+							</div>
+						</div>
+					</lightning-card>
+				</div>
+
+				<!-- סינון מוצרים -->
+				<div class="slds-col cards-title">
+					<lightning-card title="פרמטרים נוספים לסינון מוצרים" icon-name="standard:hierarchy">
+						<header	slot="title" class="slds-page-header slds-page-header_record-home">GroupName 1</header>
+						<lightning-input onchange={handleShowHideFilterCardChange} type="toggle" name="input1">
+						</lightning-input>
+						<template if:true={showFilterCard}>
+							<div class="slds-box slds-theme_shade">
+								<!--  Filter Properties -->
+								<div class="slds-grid slds-gutters slds-grid_vertical">
+									<!-- vertical grid -->
+									<div class="slds-col">
+										<!-- עד תאריך -->
+										<lightning-combobox
+											class="productfamily"
+											name="productfamily   "
+											label="משפחת מוצר"
+											value={productFamily}
+											placeholder="בחר משפחת מוצר"
+											options={productFamiliesMetaData}
+											onchange={updateProductFamily}
+										></lightning-combobox>
+									</div>
+									<div class="slds-col" style="margin-top: 12px">
+										<!-- תוסף ומיקרו אלמנט -->
+										<div class="slds-grid slds-gutters">
+											<div class="slds-col">
+												<!-- תוסף -->
+												<c-mutli-select-picklist
+													onselectedvaluesent={updateselectedAddIns}
+													picklistlabel="תוספים"
+													placeholder="בחר תוסף"
+													values={addInsMetaData}
+													class="addins-picklist"
+												></c-mutli-select-picklist>
+											</div>
+											<div class="slds-col">
+												<!-- מיקרו אלמנט -->
+												<c-mutli-select-picklist
+													onselectedvaluesent={updateSelectedMicroElements}
+													picklistlabel="מיקרו אלמנטים"
+													placeholder="בחר מיקרו אלמנט"
+													values={microElementsMetaData}
+													class="microelements-picklist"
+												></c-mutli-select-picklist>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</template>
+					</lightning-card>
+				</div>
+				<!-- מוצר/כמויות  -->
+				<div class="slds-col cards-title">
+					<lightning-card title="מוצר וכמויות" icon-name="standard:pricebook">
+						<div class="slds-grid slds-gutters slds-grid_vertical">
+							<!-- npk -->
+							<div class="slds-col">
+								<div class="slds-grid slds-gutters">
+									<div class="slds-col">
+										<!-- 										
+											Step attribute is prevent user input of more then x digits right to the 
+											decimal point but won't prevent more digit in case of binding the Nvalue 
+											from class memeber into the input field 
+											NOTE: The step attribute will add padding triling insignificant zeroes 
+										-->
+										<lightning-input 
+											message-when-step-mismatch="ניתן להכניס עד שתי ספרות בלבד לאחר הנקודה העשרונית"
+											type="number"
+											name="K__c"
+											step=".01"
+											label=" K (יחידה)"
+											onchange={onNPKvalueChange}
+											value={kValue}
+											variant="label-stacked"
+											autocomplete="off"                      
+										></lightning-input>                      
+									</div>
+									<div class="slds-col">
+										<lightning-input 
+										message-when-step-mismatch="ניתן להכניס עד שתי ספרות בלבד לאחר הנקודה העשרונית"
+										type="number"
+										step=".01"
+										name="P__c"
+										label=" P (יחידה) "
+										onchange={onNPKvalueChange}
+										value={pValue}
+										variant="label-stacked"
+										autocomplete="off"                      
+										></lightning-input>                                         
+									</div>
+									<div class="slds-col">
+										<lightning-input 
+											message-when-step-mismatch="ניתן להכניס עד שתי ספרות בלבד לאחר הנקודה העשרונית"
+											type="number"
+											step=".01"
+											name="N__c"
+											label=" N (יחידה) "
+											onchange={onNPKvalueChange}
+											value={nValue}
+											variant="label-stacked"
+											autocomplete="off"                      
+										></lightning-input>                                          
+									</div>
+								</div>
+							</div>
+							
+							<!-- search product -->
+							<div class="slds-col">
+								<c-ux-quick-lookup class="product-lookup slds-col" 
+									independent-field-to-query = {productFamily}
+									label="חפש מוצר"
+									object-api-name="Product2"
+									fields="specific_gravity__c,N__c,P__c,K__c, Extension_1__c,Extension_2__c,Extension_3__c,
+										Extension_4__c,Extension_5__c,Extension_6__c,Extension_7__c,Extension_8__c, 
+										Extension_1__r.Name, Extension_2__r.Name,Extension_3__r.Name,Extension_4__r.Name,
+										Extension_5__r.Name,Extension_6__r.Name, Extension_7__r.Name,Extension_8__r.Name"
+									icon-name="standard:product"
+									onlookupselectdevent={populateProductFields}
+									onnoresultsreceived={handleNoResults}
+									extra-where-clause={extraWhereClause}
+								></c-ux-quick-lookup>
+								<div class="slds-col" >
+									<div class="slds-grid slds-gutters">
+										<template if:true={addIns}>
+											<template for:each={addIns} for:item="addIn">
+												<div class="slds-col" key={addIn.Id}>
+													<lightning-input  
+														message-when-step-mismatch="ניתן להכניס עד שתי ספרות בלבד לאחר הנקודה העשרונית"
+														step=".01"                    
+														data-id={addIn.Id}
+														data-exfieldapi={addIn.FieldApi}
+														onchange={updateAddIns}
+														type="number"
+														name={addIn.Name}
+														label={addIn.Name}
+														value={addIn.Value}
+													></lightning-input>ליטר לדונם
+												</div>
+											</template>
+										</template>
+									</div>
+								</div>
+							</div>
+
+							<!-- parameters -->
+							<div class="slds-col">
+								<div class="slds-grid slds-gutters" style="margin-top: 5px">
+									<div class="slds-col">
+										<lightning-input-field
+											field-name="Relative_fertilization__c"
+											variant="label-stacked"
+											onchange={updateRelativeFertilization}
+											value={relativeFertilization}
+										></lightning-input-field>
+									</div>
+
+									<div class="slds-col">
+										<template if:true={relativeFertilization}>
+											<lightning-input-field
+												field-name="Irrigation_cubic_meters_per_dunam__c"
+												value={irrigationCubicMetersPerDunam}
+												onchange={updateIrrigationCubicMetersPerDunam}
+												variant="label-stacked"
+											></lightning-input-field>
+										</template>
+									</div>
+
+									<div class="slds-col">
+										<lightning-input-field 
+											field-name="Division_into_irrigations__c"
+											value={numberOfWaterings}
+											onchange={updateNumberOfWaterings}
+										></lightning-input-field>
+									</div>                                    
+								</div>
+							</div>
+							<div class="slds-col">
+								<lightning-input 
+									max-length="50" 
+									type="text" 
+									label="הערה" 
+									onchange={onOppLineItemDescriptionChange} 
+									value={oppLineItemDescription}
+								></lightning-input>       
+							</div>
+
+							<!-- Hidden fields for lightning-record-edit-form  -->
+							<lightning-layout-item class="slds-hide">          
+								<lightning-input-field 
+									field-name="Description"
+									variant="label-stacked" value={oppLineItemDescription}
+								></lightning-input-field>                 
+								<lightning-input-field
+									field-name="N__c"
+									value={nValue}
+									variant="label-stacked"
+								></lightning-input-field> 
+								<lightning-input-field
+									field-name="P__c"
+									value={pValue}
+									variant="label-stacked"
+								></lightning-input-field>  
+								<lightning-input-field
+									field-name="K__c"
+									value={kValue}
+									variant="label-stacked"
+								></lightning-input-field>                            
+								<lightning-input-field
+									field-name="Quantity_per_hectare__c"
+									variant="label-stacked"
+									value={quantityHectare}
+								></lightning-input-field>
+								<lightning-input-field
+									field-name="UnitPrice"
+									value="0"
+									variant="label-stacked"
+								></lightning-input-field>
+								<lightning-input-field
+									field-name="ListPrice"
+									value="0"
+									variant="label-stacked"
+								></lightning-input-field>
+								<lightning-input-field
+									field-name="Irrigation_units__c"
+									variant="label-stacked"
+									value={irrigationUnits}
+								></lightning-input-field>
+								<lightning-input-field
+									field-name="Quantity"
+									variant="label-stacked"
+									value={quantity}
+								></lightning-input-field>
+								<lightning-input-field
+									field-name="OpportunityId"
+									variant="label-stacked"
+									value={oppRecordId}
+								></lightning-input-field>
+								<lightning-input-field
+									field-name="Plot__c"
+									variant="label-stacked"
+									value={selectedPlot}
+								></lightning-input-field>
+								<lightning-input-field
+									field-name="Product2Id"
+									variant="label-stacked"
+									value={productId}
+								></lightning-input-field>
+								<lightning-input-field
+									field-name="Plots__c"
+									variant="label-stacked"
+								></lightning-input-field>
+								<lightning-input-field
+									field-name="Plot_Size__c"
+									variant="label-stacked"
+								></lightning-input-field>
+								<lightning-input-field
+									field-name="Date__c"
+									variant="label-stacked"
+								></lightning-input-field>
+							</lightning-layout-item>
+						</div>
+					</lightning-card>
+				</div>
+
+				<!-- סיכום -->
+				<lightning-card 
+					if:true={showContainerSum}
+					class= "container-sum slds-p-top_medium  slds-p-bottom_medium slds-grid"
+					title = "סיכום" 
+					icon-name= "standard:record"
+				>
+					<div class="slds-col slds-gutters slds-grid_vertical slds-text-body_small" >
+						<div class="slds-col slds-m-bottom_small">
+							<div data-id ='sum-card-inputs' class="container-data-text slds-grid">
+								
+								<div class="slds-col slds-size_1-of-5" >
+									<label for="quantityHectareLabel" class="slds-form-element__label">סך גודל החלקה (דונם)</label>
+									<lightning-input style="text-align:center;border:1px solid #D0D0D0; border-radius:4px;" 
+										id="XXXXXXXX" 
+										label="(דונם) סך גודל החלקה"
+										type="number"
+										variant="label-hidden"
+										value={sumSize}
+										read-only
+										onchange={updateQuantityHectare}
+									></lightning-input>
+								</div>
+
+								<div class="slds-col slds-size_1-of-5" >
+									<label for="quantityHectareLabel" class="slds-form-element__label">כמות דשן לדונם (ליטר)</label>
+									<lightning-input style="text-align:center;border:1px solid #D0D0D0; border-radius:4px;" 
+										id="quantityHectareLabel" 
+										label="כמות דשן לדונם (ליטר)"
+										type="number"
+										variant="label-hidden"
+										value={quantityHectare}
+										readonly={isQuantityPerHectareReadOnly}
+										onchange={updateQuantityHectare}
+									></lightning-input>
+								</div>
+
+								<div class="slds-col slds-size_2-of-7">
+									<label for="irrigationUnitsLabel " class="slds-form-element__label">כמות דשן להשקיה בחלקה (קוב)</label>
+									<lightning-input class="slds-input"
+										id= "irrigationUnitsLabel"
+										type="number"
+										read-only
+										label="כמות דשן להשקיה בחלקה (קוב) "
+										variant="label-hidden"
+										value={irrigationUnits}
+									></lightning-input>
+								</div>
+
+								<div class="slds-col slds-size_1-of-5" >
+									<label for="quantityLabel" class="slds-form-element__label">כמות דשן לחלקה (קוב) </label>
+									<lightning-input class="slds-input"
+										id= "quantityLabel"
+										label="כמות דשן לחלקה (קוב)"
+										type="number"
+										variant="label-hidden"
+										value={quantity}
+										read-only
+									></lightning-input>
+								</div>
+							</div>
+						</div>
+
+						<div class="slds-col">
+							<lightning-button
+								class="slds-align_absolute-center slds-button_stretch slds-button slds-button_brand"
+								type="submit"
+								variant="brand"
+								label="עדכן תוכנית"
+							></lightning-button>
+						</div>
+					</div>
+				</lightning-card>
+			</div>
+		</lightning-record-edit-form>
+	</div>
+</template>

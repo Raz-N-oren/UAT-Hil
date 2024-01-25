@@ -1,0 +1,20 @@
+<template>
+    <div class="container">
+
+        <div>
+            <!-- <label for="customer">הערת לקוח</label>
+            <p id="customer">{notes.Description}</p> -->
+            <lightning-textarea class="textarea" value={notes.Description} name="input1" label="הערת לקוח" onchange={changeCustomerOrderNote} placeholder="הקלד כאן.."></lightning-textarea>
+
+        </div>
+        <div>
+            <label for="driver">הערה לנהג</label>
+            <p id="driver">{notes.Regular_note_to_the_driver__c}</p>
+        </div>
+        <div>
+            <label for="unload">הערת פריקה</label>
+            <p id="unload">{notes.Note_for_discharge__c}</p>
+        </div>
+        <lightning-textarea class="textarea" value={rec.Description} name="input2" label="הערה כללית להזמנה" onchange={changeGeneralOrderNote} placeholder="הקלד כאן.."></lightning-textarea>
+    </div>
+</template>
